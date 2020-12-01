@@ -2,11 +2,11 @@ import os
 import sys
 sys.path.append('/home/pi/openpibo/lib')
 
-from text.textlib import cText
+from speech.speechlib import cSpeech
 from audio.audiolib import cAudio
 
 def tts_f():
-  tObj = cText()
+  tObj = cSpeech()
   #filename = "/home/pi/openpibo/data/tts.wav"
   filename = "weather.wav"
   tObj.tts("서울시 강남구  오늘 날씨를 알려줄게요. 맑씨는 맑음, 기온은 17도입니다.", filename)

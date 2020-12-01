@@ -1,10 +1,10 @@
 import sys
 sys.path.append('/home/pi/openpibo/lib')
 
-from text.textlib import cText
+from speech.speechlib import cSpeech
 
 def translate_f():
-  obj = cText()
+  obj = cSpeech()
   string = "안녕하세요"
   ret = obj.translate(string, src="ko", dest="en")
   print("Input:", string)

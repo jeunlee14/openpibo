@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/home/pi/openpibo/lib')
 
-from text.textlib import cDialog
+from speech.speechlib import cDialog
 
 def mecab_f(string, mode):
   print("Input: ", string)
