@@ -91,22 +91,21 @@ class cCamera:
     return cv2.bitwise_and(img_color, img_edge)
 
 class cFace:
-  def __init__(self, model_path, data_path):
-    self.model_path = model_path
-    self.data_path = data_path
+  def __init__(self, cfg):
+    self.model_path = cfg.MODEL_PATH
     self.facedb = [[],[]]
     self.threshold = 0.4
     self.age_class = ['(0, 2)','(4, 6)','(8, 12)','(15, 20)','(25, 32)','(38, 43)','(48, 53)','(60, 100)']
     self.gender_class = ['Male', 'Female']
     self.agenet = cv2.dnn.readNetFromCaffe(
-                 self.model_path+"deploy_age.prototxt",
-                 self.model_path+"age_net.caffemodel")
+                 self.model_path+"/deploy_age.prototxt",
+                 self.model_path+"/age_net.caffemodel")
     self.gendernet = cv2.dnn.readNetFromCaffe(
-                    self.model_path+"deploy_gender.prototxt",
-                    self.model_path+"gender_net.caffemodel")
-    self.face_detector = cv2.CascadeClassifier(self.model_path + "haarcascade_frontalface_default.xml")
-    self.predictor = dlib.shape_predictor(self.model_path + "shape_predictor_5_face_landmarks.dat")
-    self.face_encoder = dlib.face_recognition_model_v1(self.model_path + "dlib_face_recognition_resnet_model_v1.dat")
+                    self.model_path+"/deploy_gender.prototxt",
+                    self.model_path+"/gender_net.caffemodel")
+    self.face_detector = cv2.CascadeClassifier(self.model_path + "/haarcascade_frontalface_default.xml")
+    self.predictor = dlib.shape_predictor(self.model_path + "/shape_predictor_5_face_landmarks.dat")
+    self.face_encoder = dlib.face_recognition_model_v1(self.model_path + "/dlib_face_recognition_resnet_model_v1.dat")
   
   def get_db(self):
     return self.facedb
@@ -131,13 +130,13 @@ class cFace:
 
     self.facedb[0].append(name)
     self.facedb[1].append(face_encoding)
-    cv2.imwrite(self.data_path+"{}.jpg".format(name), img[y+3:y+h-3, x+3:x+w-3]);
+    #cv2.imwrite(self.data_path+"/{}.jpg".format(name), img[y+3:y+h-3, x+3:x+w-3]);
 
   def delete_face(self, name):
     ret = name in self.facedb[0]
     if ret == True:
       idx = self.facedb[0].index(name)
-      os.remove(self.data_path + name + ".jpg")
+      #os.remove(self.data_path +"/" + name + ".jpg")
       for item in self.facedb:
         del item[idx]
 
@@ -197,15 +196,14 @@ class cFace:
     return data
 
 class cDetect:
-
-  def __init__(self, model_path):
-    self.model_path = model_path
+  def __init__(self, cfg):
+    self.model_path = cfg.MODEL_PATH
     self.object20_class = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus",
                     "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike",
                     "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
     self.mobilenet = cv2.dnn.readNetFromCaffe(
-                   self.model_path+"MobileNetSSD_deploy.prototxt.txt",
-                   self.model_path+"MobileNetSSD_deploy.caffemodel")
+                   self.model_path+"/MobileNetSSD_deploy.prototxt.txt",
+                   self.model_path+"/MobileNetSSD_deploy.caffemodel")
 
   def detect_object(self, img):
     data = []

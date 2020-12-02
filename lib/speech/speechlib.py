@@ -18,9 +18,9 @@ def getDiff(aT, bT):
   return cnt / len(aT)
 
 class cText:
-  def __init__(self, google_account=None):
+  def __init__(self, cfg):
     self.translator = Translator()
-    self.google_account = google_account
+    self.google_account = cfg.GOOGLE_ACCOUNT
     if self.google_account:
       os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.google_account
       self.client = speech.SpeechClient()
@@ -58,8 +58,8 @@ class cText:
 
 class cDialog:
   #"dialog_path":"/home/pi/openpibo/lib/text/data/dialog.csv"
-  def __init__(self, dialog_path):
-    self.dialog_path = dialog_path
+  def __init__(self, cfg):
+    self.dialog_path = cfg.PROC_PATH+"/dialog.csv"
     self.mecab = Mecab()
     self.dialog_db = []
     with open(self.dialog_path, 'r', encoding='utf-8') as f:

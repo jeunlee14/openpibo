@@ -8,10 +8,10 @@ import PIL.ImageOps
 class cOled:
   #"font_path":"/home/pi/openpibo/lib/oled/NanumGothic.ttf",
 
-  def __init__(self, font_path):
+  def __init__(self, config):
     self.width = 128
     self.height = 64
-    self.font_path = font_path 
+    self.font_path = config.PROC_PATH+"/NanumGothic.ttf"
     self.font_size = 10
 
     spi = busio.SPI(11, 10, 9)
