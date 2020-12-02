@@ -6,16 +6,14 @@ from PIL import Image, ImageDraw, ImageFont
 import PIL.ImageOps
 
 class cOled:
-  _defaults = {
-    "width":128,
-    "height":64,
-    "font_path":"/home/pi/openpibo/lib/oled/NanumGothic.ttf",
-    "font_size":10,
-  }
+  #"font_path":"/home/pi/openpibo/lib/oled/NanumGothic.ttf",
 
-  def __init__(self, func=None):
-    self.__dict__.update(self._defaults) # set up default values
-    self.func = func
+  def __init__(self, font_path):
+    self.width = 128
+    self.height = 64
+    self.font_path = font_path 
+    self.font_size = 10
+
     spi = busio.SPI(11, 10, 9)
     rst_pin = digitalio.DigitalInOut(board.D24) # any pin!
     cs_pin = digitalio.DigitalInOut(board.D8)    # any pin!

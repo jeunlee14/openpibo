@@ -1,11 +1,5 @@
 # Computer Vision
 
-## cVision 클래스
-
-+ 기능
-  - models_path, data_path: 데이터 경로를 설정합니다.
-
-
 ## cCamera 클래스
 
 + 기능
@@ -90,10 +84,13 @@
   - 학습된 얼굴을 인식합니다.
   - 얼굴로 나이/성별은 추정합니다.
 
-+ cFace.__init__()
++ cFace.__init__(model_path, data_path)
   - 기능: cFace 클래스를 초기화합니다.
     + facedb 생성
     + 얼굴인식/분석/탐지에 대한 모델 로드
+  - 매개변수
+    + model_path: model파일의 경로를 설정합니다.
+    + data_path: data파일의 경로를 설정합니다.
 
 + cFace.get_db()
   - 기능: 사용 중인 얼굴 데이터베이스를 확인합니다.
@@ -161,10 +158,12 @@
   - QR/바코드 인식
   - 문자 인식(OCR, Tesseract)
 
-+ cDetect.__init__()
++ cDetect.__init__(model_path)
   - 기능: cDetect 클래스를 초기화합니다.
+  - 매개변수
+    + model_path: model파일의 경로를 설정합니다.
 
-+ cDetect.detect_object()
++ cDetect.detect_object(img)
   - 기능: 이미지 안의 객체를 인식합니다. (20개 클래스의 사물인식)
   - 인식가능한 사물
     ["background", "aeroplane", "bicycle", "bird", "boat",
@@ -176,14 +175,14 @@
   - 반환값
     + ret: {"name":이름, "score":점수, "position":사물좌표(startX, startY, endX, endY)}
 
-+ Vision.detect_qr()
++ cDetect.detect_qr(img)
   - 기능: 이미지 안의 QR코드 및 바코드를 인식합니다.
   - 매개변수
     + img: 이미지 데이터(imread or read함수로 반환받은 데이터)
   - 반환값
     + ret: {"type":바코드/QR코드, "data":내용}
 
-+ Vision.detect_text()
++ cDetect.detect_text(img)
   - 기능: 이미지 안의 문자를 인식합니다.
   - 매개변수
     + img: 이미지 데이터(imread or read함수로 반환받은 데이터)

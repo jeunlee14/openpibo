@@ -6,12 +6,11 @@ from pyzbar import pyzbar
 import pickle,os,time
 from vision.stream import VideoStream
 
-class cVision:
-  models_path = "/home/pi/openpibo/lib/vision/models/"
-  data_path = "/home/pi/openpibo/data/"
+#class cVision:
+  #model_path = "/home/pi/openpibo/lib/vision/models/"
+  #data_path = "/home/pi/openpibo/data/"
 
-class cCamera(cVision):
-
+class cCamera:
   def __init__(self):
     os.system('v4l2-ctl -c vertical_flip=1,horizontal_flip=1,white_balance_auto_preset=3')
 
@@ -91,21 +90,23 @@ class cCamera(cVision):
     img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
     return cv2.bitwise_and(img_color, img_edge)
 
-class cFace(cVision):
-  def __init__(self):
+class cFace:
+  def __init__(self, model_path, data_path):
+    self.model_path = model_path
+    self.data_path = data_path
     self.facedb = [[],[]]
     self.threshold = 0.4
     self.age_class = ['(0, 2)','(4, 6)','(8, 12)','(15, 20)','(25, 32)','(38, 43)','(48, 53)','(60, 100)']
     self.gender_class = ['Male', 'Female']
     self.agenet = cv2.dnn.readNetFromCaffe(
-                 self.models_path+"deploy_age.prototxt",
-                 self.models_path+"age_net.caffemodel")
+                 self.model_path+"deploy_age.prototxt",
+                 self.model_path+"age_net.caffemodel")
     self.gendernet = cv2.dnn.readNetFromCaffe(
-                    self.models_path+"deploy_gender.prototxt",
-                    self.models_path+"gender_net.caffemodel")
-    self.face_detector = cv2.CascadeClassifier(self.models_path + "haarcascade_frontalface_default.xml")
-    self.predictor = dlib.shape_predictor(self.models_path + "shape_predictor_5_face_landmarks.dat")
-    self.face_encoder = dlib.face_recognition_model_v1(self.models_path + "dlib_face_recognition_resnet_model_v1.dat")
+                    self.model_path+"deploy_gender.prototxt",
+                    self.model_path+"gender_net.caffemodel")
+    self.face_detector = cv2.CascadeClassifier(self.model_path + "haarcascade_frontalface_default.xml")
+    self.predictor = dlib.shape_predictor(self.model_path + "shape_predictor_5_face_landmarks.dat")
+    self.face_encoder = dlib.face_recognition_model_v1(self.model_path + "dlib_face_recognition_resnet_model_v1.dat")
   
   def get_db(self):
     return self.facedb
@@ -195,15 +196,16 @@ class cFace(cVision):
     #cv2.putText(img, "{} {}".format(gender, age), (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,128,128), 2)
     return data
 
-class cDetect(cVision):
+class cDetect:
 
-  def __init__(self):
+  def __init__(self, model_path):
+    self.model_path = model_path
     self.object20_class = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus",
                     "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike",
                     "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
     self.mobilenet = cv2.dnn.readNetFromCaffe(
-                   self.models_path+"MobileNetSSD_deploy.prototxt.txt",
-                   self.models_path+"MobileNetSSD_deploy.caffemodel")
+                   self.model_path+"MobileNetSSD_deploy.prototxt.txt",
+                   self.model_path+"MobileNetSSD_deploy.caffemodel")
 
   def detect_object(self, img):
     data = []

@@ -31,63 +31,63 @@ GPIO.setmode(GPIO.BCM)  # Use BCM pins D4 = GPIO #4
 GPIO.setwarnings(False)  # shh!
 
 class Pin:
-    """Pins dont exist in CPython so...lets make our own!"""
+  """Pins dont exist in CPython so...lets make our own!"""
 
-    IN = 0
-    OUT = 1
-    LOW = 0
-    HIGH = 1
-    PULL_NONE = 0
-    PULL_UP = 1
-    PULL_DOWN = 2
+  IN = 0
+  OUT = 1
+  LOW = 0
+  HIGH = 1
+  PULL_NONE = 0
+  PULL_UP = 1
+  PULL_DOWN = 2
 
-    id = None
-    _value = LOW
-    _mode = IN
+  id = None
+  _value = LOW
+  _mode = IN
 
-    def __init__(self, bcm_number):
-        self.id = bcm_number
+  def __init__(self, bcm_number):
+    self.id = bcm_number
 
-    def __repr__(self):
-        return str(self.id)
+  def __repr__(self):
+    return str(self.id)
 
-    def __eq__(self, other):
-        return self.id == other
+  def __eq__(self, other):
+    return self.id == other
 
-    def init(self, mode=IN, pull=None):
-        """Initialize the Pin"""
-        if mode is not None:
-            if mode == self.IN:
-                self._mode = self.IN
-                GPIO.setup(self.id, GPIO.IN)
-            elif mode == self.OUT:
-                self._mode = self.OUT
-                GPIO.setup(self.id, GPIO.OUT)
-            else:
-                raise RuntimeError("Invalid mode for pin: %s" % self.id)
-        if pull is not None:
-            if self._mode != self.IN:
-                raise RuntimeError("Cannot set pull resistor on output")
-            if pull == self.PULL_UP:
-                GPIO.setup(self.id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            elif pull == self.PULL_DOWN:
-                GPIO.setup(self.id, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-            else:
-                raise RuntimeError("Invalid pull for pin: %s" % self.id)
+  def init(self, mode=IN, pull=None):
+    """Initialize the Pin"""
+    if mode is not None:
+      if mode == self.IN:
+        self._mode = self.IN
+        GPIO.setup(self.id, GPIO.IN)
+      elif mode == self.OUT:
+        self._mode = self.OUT
+        GPIO.setup(self.id, GPIO.OUT)
+      else:
+        raise RuntimeError("Invalid mode for pin: %s" % self.id)
+    if pull is not None:
+      if self._mode != self.IN:
+        raise RuntimeError("Cannot set pull resistor on output")
+      if pull == self.PULL_UP:
+        GPIO.setup(self.id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+      elif pull == self.PULL_DOWN:
+        GPIO.setup(self.id, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+      else:
+        raise RuntimeError("Invalid pull for pin: %s" % self.id)
 
-    def value(self, val=None):
-        """Set or return the Pin Value"""
-        if val is not None:
-            if val == self.LOW:
-                self._value = val
-                GPIO.output(self.id, val)
-            elif val == self.HIGH:
-                self._value = val
-                GPIO.output(self.id, val)
-            else:
-                raise RuntimeError("Invalid value for pin")
-            return None
-        return GPIO.input(self.id)
+  def value(self, val=None):
+    """Set or return the Pin Value"""
+    if val is not None:
+      if val == self.LOW:
+        self._value = val
+        GPIO.output(self.id, val)
+      elif val == self.HIGH:
+        self._value = val
+        GPIO.output(self.id, val)
+      else:
+        raise RuntimeError("Invalid value for pin")
+      return None
+    return GPIO.input(self.id)
 
 
 # Pi 1B rev1 only?
@@ -167,17 +167,17 @@ D45 = Pin(45)
 
 # ordered as spiId, sckId, mosiId, misoId
 spiPorts = (
-    (0, SCLK, MOSI, MISO),
-    (1, SCLK_1, MOSI_1, MISO_1),
-    (2, SCLK_2, MOSI_2, MISO_2),
+  (0, SCLK, MOSI, MISO),
+  (1, SCLK_1, MOSI_1, MISO_1),
+  (2, SCLK_2, MOSI_2, MISO_2),
 )
 
 # ordered as uartId, txId, rxId
 uartPorts = ((1, TXD, RXD),)
 
 i2cPorts = (
-    (3, SCL, SDA),
-    (1, SCL, SDA),
-    (0, D1, D0),  # both pi 1 and pi 2 i2c ports!
+  (3, SCL, SDA),
+  (1, SCL, SDA),
+  (0, D1, D0),  # both pi 1 and pi 2 i2c ports!
 )
 

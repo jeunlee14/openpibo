@@ -57,12 +57,9 @@ class cText:
     return results
 
 class cDialog:
-  _defaults = {
-    "dialog_path":"/home/pi/openpibo/lib/text/data/dialog.csv"
-  }
-
-  def __init__(self):
-    self.__dict__.update(self._defaults) # set up default values
+  #"dialog_path":"/home/pi/openpibo/lib/text/data/dialog.csv"
+  def __init__(self, dialog_path):
+    self.dialog_path = dialog_path
     self.mecab = Mecab()
     self.dialog_db = []
     with open(self.dialog_path, 'r', encoding='utf-8') as f:

@@ -4,12 +4,9 @@ import os
 import json
 
 class cMotion:
-  _defaults = {
-    "profile_path":"/home/pi/openpibo/lib/motion/motion_db.json"
-  }
-
-  def __init__(self):
-    self.__dict__.update(self._defaults) # set up default values
+  #"profile_path":"/home/pi/openpibo/lib/motion/motion_db.json"
+  def __init__(self, _p=None):
+    self.profile_path = _p
     with open(self.profile_path, 'r') as f:
       self.profile = json.load(f)
 

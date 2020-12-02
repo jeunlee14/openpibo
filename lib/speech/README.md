@@ -35,8 +35,10 @@
 
 ## cDialog 클래스
 
-+ cDialog.__init()__
++ cDialog.__init(dialog_path)__
   - 기능: cDialog 클래스를 초기화합니다.
+  - 매개변수
+    + dialog_path: dialog csv파일 path
 
 + cDialog.mecab_pos(string)
   - 기능: 형태소를 pos모드로 추출합니다.
