@@ -1,13 +1,9 @@
 import os
 
 class cAudio:
-  _defaults = {
-    "out":"local",
-    "volume":0
-  }
-
   def __init__(self):
-    self.__dict__.update(self._defaults) # set up default values
+    self.out = "local"
+    self.volume = 0
 
   def set_config(self, out="local", volume=0):
     # out: local/hdmi/both
