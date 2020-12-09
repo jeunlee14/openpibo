@@ -5,8 +5,8 @@ import json
 
 class cMotion:
   #"profile_path":"/home/pi/openpibo/lib/motion/motion_db.json"
-  def __init__(self, config):
-    self.profile_path=config.PROC_PATH+"/motion_db.json"
+  def __init__(self, conf=None):
+    self.profile_path=conf.PROC_PATH+"/motion_db.json"
     with open(self.profile_path, 'r') as f:
       self.profile = json.load(f)
 

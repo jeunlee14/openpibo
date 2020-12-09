@@ -91,8 +91,8 @@ class cCamera:
     return cv2.bitwise_and(img_color, img_edge)
 
 class cFace:
-  def __init__(self, cfg):
-    self.model_path = cfg.MODEL_PATH
+  def __init__(self, conf=None):
+    self.model_path = conf.MODEL_PATH
     self.facedb = [[],[]]
     self.threshold = 0.4
     self.age_class = ['(0, 2)','(4, 6)','(8, 12)','(15, 20)','(25, 32)','(38, 43)','(48, 53)','(60, 100)']
@@ -196,8 +196,8 @@ class cFace:
     return data
 
 class cDetect:
-  def __init__(self, cfg):
-    self.model_path = cfg.MODEL_PATH
+  def __init__(self, conf=None):
+    self.model_path = conf.MODEL_PATH
     self.object20_class = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus",
                     "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike",
                     "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
