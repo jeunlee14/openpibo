@@ -4,7 +4,7 @@ import io
 import os
 from konlpy.tag import Mecab
 from gtts import gTTS
-from googletrans import Translator
+from google_trans_new import google_translator
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
@@ -19,15 +19,15 @@ def getDiff(aT, bT):
 
 class cSpeech:
   def __init__(self, conf=None):
-    self.translator = Translator()
+    self.translator = google_translator()
     self.google_account = conf.GOOGLE_ACCOUNT
     if self.google_account:
       os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.google_account
       self.client = speech.SpeechClient()
       self.sample_rate = 16000
 
-  def translate(self, string, src='en', dest='ko'):
-    return self.translator.translate(string, src=src, dest=dest).text
+  def translate(self, string, to='ko'):
+    return self.translator.translate(string, lang_tgt=to)
 
   def tts(self, string, filename="tts.mp3", lang="ko"):
     gTTS(string, lang=lang).save(filename)
