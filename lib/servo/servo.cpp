@@ -32,9 +32,13 @@ int main(int argc, char* argv[])
 
   // Command
   // servo move [servo0_pos] [servo1_pos] ... [servo9_pos] [move_time]
+  // v` = (0.25us / 10ms) * v = 10degree / time(ms)
+  // v = (10 / 0.25) * 10degree / (time(ms)+alpha) = 40 * 10degree / (time + alpha)
+  // alpha = 10ms
+  // v = 40 * 10degree/(time+10)
   if(strcmp(argv[1], "move") == 0){
     int pPos[10] = {0,};
-    float op = (float)40/(float)atoi(argv[12]);
+    float op = (float)40/(float)(atoi(argv[12])+10)*1.1;
     get_motor_profile(1,1,1);
 
     for(i = 0; i < 10;i++){
@@ -44,6 +48,7 @@ int main(int argc, char* argv[])
       if(speed<4) speed=4;
       if(speed>50) speed=50;
       SetSpeed(i, speed);
+      SetAcceleration(i, speed*0.8);
     }
     SetMultiTarget(pPos);
     set_motor_profile(0,1,1);
