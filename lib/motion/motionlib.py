@@ -14,10 +14,6 @@ class cMotion:
     with open(path, 'r') as f:
       self.profile = json.load(f)
 
-  def init_profile(self):
-    with open(self.profile_path, 'r') as f:
-      self.profile = json.load(f)
-
   def set_motor(self, no, position):
     os.system("servo write {} {}".format(no, position*10))
 
@@ -33,17 +29,13 @@ class cMotion:
   def set_speed(self, n, spd):
     os.system("servo speed {} {}".format(n, spd))
 
-  def set_speeds(self, mspd):
-    os.system("servo speed all {}".format(" ".join(map(str, mspd))))
-
   def set_acceleration(self, n, accl):
     os.system("servo accelerate {} {}".format(n, accl))
 
-  def set_accelerations(self, maccl):
-    os.system("servo accelerate all {}".format(" ".join(map(str, maccl))))
-
-  def get_motion(self):
-    return self.profile
+  def get_motion(self, name):
+    ret = self.profile.get(name)
+    ret = self.profile if ret == None else ret
+    return ret
 
   def set_motion(self, name, cycle=1):
     ret = True

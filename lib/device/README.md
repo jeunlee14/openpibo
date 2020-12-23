@@ -4,28 +4,11 @@
 
 + cDevice.__init__(func)
   - 기능: cDevice 클래스를 초기화합니다.
-  - 매개변수
-    + func: 콜백함수(send_raw 함수를 참고하세요.)
 
-+ cDevice Thread 관련 함수
-  - 기능: Device와의 통신을 위한 Thread입니다.
-    + SYSTEM(1초), BATTERY(10초) 간격으로 자동 전송
-    + Touch/PIR/DC잭/버튼 인식 가능
-    + cDevice.start(): Thread를 시작합니다.
-    + cDevice.update(): Thread의 동작 함수입니다.
-    + cDevice.stop(): Thread를 종료합니다.
-
-+ cDevice.get_type(code)
-  - 기능: 메시지 코드를 문자로 변경합니다.
-  - 매개변수
-    + code: 메시지 코드
++ cDevice.locked()
+  - 기능: Device가 사용 중인지 확인한다.
   - 반환값
-    + data: 대응하는 문자열
-
-+ cDevice.get_command_list()
-  - 기능: 메시지 목록을 가져옵니다.
-  - 반환값
-    + data: 메시지 목록
+    + ret: True/False
 
 + cDevice.send_cmd(code, data)
   - 기능: Device에 메시지 코드/데이터를 전송하고 응답을 받습니다.
@@ -33,7 +16,6 @@
     + code: 메시지 코드
     + data: 메시지
   - 반환값
-    + ret: 성공/실패
     + data:  Device 로부터 받은 응답
 
 + cDevice.send_raw(raw)
@@ -41,7 +23,6 @@
   - 매개변수
     + raw: 실제 전달되는 메시지
   - 반환값
-    + ret: 성공/실패
     + data:  Device 로부터 받은 응답
 
 

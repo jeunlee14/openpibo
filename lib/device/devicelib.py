@@ -16,7 +16,6 @@ class cDevice:
     "TOUCH":"31",
     "SYSTEM":"40",
     }
-
     self.dev = serial.Serial(port="/dev/ttyS0", baudrate=9600)
     self.lock = Lock()
 

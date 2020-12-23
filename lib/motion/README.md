@@ -23,7 +23,7 @@
   - 기능: 전체 모터를 특정 위치로 이동합니다.
   - 매개변수
     + positions: 0-9번 모터 각도 배열 [...]
-    + movetime: 모터 이동 시간(ms), 모터가 정해진 위치까지 이동하는 시간(모터컨트롤러와의 overhead문제로 정밀하지는 않음)
+    + movetime: 모터 이동 시간(ms) - 50ms 단위, 모터가 정해진 위치까지 이동하는 시간(모터컨트롤러와의 overhead문제로 정밀하지는 않음)
 
 + cMotion.set_speed(no, speed)
   - 기능: 모터 1개의 속도를 변경합니다.
@@ -31,21 +31,11 @@
     + no: 모터 번호
     + speed: 모터 속도(0~255)
 
-+ cMotion.set_speeds(speeds)
-  - 기능: 전체 모터의 속도를 변경합니다.
-  - 매개변수
-    + speeds: 0-9번 모터 속도(0~255) 배열 [...]
-
 + cMotion.set_acceleration(no, accel)
   - 기능: 모터 1개의 가속도를 변경합니다.
   - 매개변수
     + no: 모터번호
     + accel: 모터 가속도(0~255)
-
-+ cMotion.set_accelerations(accels)
-  - 기능: 전체 모터의 가속도를 변경합니다.
-  - 매개변수
-    + accels: 0-9번 모터 가속도(0~255) 배열 [...]
 
 + cMotion.get_motion()
   - 기능: 모션 프로파일를 조회합니다.
