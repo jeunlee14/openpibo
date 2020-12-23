@@ -4,8 +4,15 @@ sys.path.append('/home/pi/openpibo/lib')
 
 from oled.oledlib import cOled
 
+class Config:
+  OPENPIBO_PATH="/home/pi/openpibo"
+  OPENPIBO_DATA_PATH="/home/pi/openpibo-data"
+  TESTDATA_PATH =OPENPIBO_DATA_PATH+"/testdata"
+  PROC_PATH =OPENPIBO_DATA_PATH+"/proc"
+  MODEL_PATH=OPENPIBO_DATA_PATH+"/models"
+
 def disp(args):
-  o = cOled()
+  o = cOled(conf=Config())
   o.set_font(size=12)
   o.draw_text((0, 0), "# NETWORK")
   o.draw_text((0,15), "[E]: {}".format(args.eip))
