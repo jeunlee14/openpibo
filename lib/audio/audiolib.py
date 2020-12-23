@@ -4,7 +4,7 @@ class cAudio:
   # out: local/hdmi/both
   # volume: mdB
   # filename: mp3/wav
-  def play(self, out='local', volume='-2000', filename):
+  def play(self, filename, out='local', volume='-2000'):
     os.system("omxplayer -o {} --vol {} {} &".format(out, volume, filename))
 
   def stop(self):
