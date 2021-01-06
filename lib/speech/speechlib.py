@@ -3,7 +3,7 @@ import random
 import io
 import os
 from konlpy.tag import Mecab
-from gtts import gTTS
+import requests
 from google_trans_new import google_translator
 from google.cloud import speech
 from google.cloud.speech import enums
@@ -20,6 +20,7 @@ def getDiff(aT, bT):
 class cSpeech:
   def __init__(self, conf=None):
     self.translator = google_translator()
+    self.kakao_account = conf.KAKAO_ACCOUNT
     self.google_account = conf.GOOGLE_ACCOUNT
     if self.google_account:
       os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.google_account
@@ -30,8 +31,22 @@ class cSpeech:
     return self.translator.translate(string, lang_tgt=to)
 
   def tts(self, string, filename="tts.mp3", lang="ko"):
-    gTTS(string, lang=lang).save(filename)
+    #gTTS(string, lang=lang).save(filename)
     #os.system('espeak "{}" {} -w {}'.format(string, opt, filename))
+    '''curl -v "https://kakaoi-newtone-openapi.kakao.com/v1/synthesize" \
+    -H "Content-Type: application/xml" \
+    -H "Authorization: KakaoAK dabfb05367a032764b5688f1602643a5" \
+    -d '<speak> 그는 그렇게 말했습니다.
+    <voice name="MAN_DIALOG_BRIGHT">잘 지냈어? 나도 잘 지냈어.</voice>
+    <voice name="WOMAN_DIALOG_BRIGHT" speechStyle="SS_ALT_FAST_1">금요일이 좋아요.</voice> </speak>' > result.mp3'''
+    url = "https://kakaoi-newtone-openapi.kakao.com/v1/synthesize"
+    headers = {
+      'Content-Type': 'application/xml',
+      'Authorization': 'KakaoAK ' + self.kakao_account
+    }
+    r = requests.post(url, headers=headers, data=string.encode('utf-8'))
+    with open(filename, 'wb') as f:
+      f.write(r.content)
 
   def stt(self, filename="stream.flac", lang="ko-KR"'''en-US''', timeout=5):
     if self.google_account == None:
