@@ -1,13 +1,14 @@
 import csv
 import random
-import io
+#import io
+import json
 import os
 from konlpy.tag import Mecab
 import requests
 from google_trans_new import google_translator
-from google.cloud import speech
-from google.cloud.speech import enums
-from google.cloud.speech import types
+#from google.cloud import speech
+#from google.cloud.speech import enums
+#from google.cloud.speech import types
 
 def getDiff(aT, bT):
   cnt = 0
@@ -21,11 +22,11 @@ class cSpeech:
   def __init__(self, conf=None):
     self.translator = google_translator()
     self.kakao_account = conf.KAKAO_ACCOUNT
-    self.google_account = conf.GOOGLE_ACCOUNT
-    if self.google_account:
-      os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.google_account
-      self.client = speech.SpeechClient()
-      self.sample_rate = 16000
+    #self.google_account = conf.GOOGLE_ACCOUNT
+    #if self.google_account:
+    #  os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.google_account
+    #  self.client = speech.SpeechClient()
+    #  self.sample_rate = 16000
 
   def translate(self, string, to='ko'):
     return self.translator.translate(string, lang_tgt=to)
@@ -48,28 +49,46 @@ class cSpeech:
     with open(filename, 'wb') as f:
       f.write(r.content)
 
-  def stt(self, filename="stream.flac", lang="ko-KR"'''en-US''', timeout=5):
-    if self.google_account == None:
-      return False
+  def stt(self, filename="stream.wav", lang="ko-KR"'''en-US''', timeout=5):
+    #if self.google_account == None:
+    #  return False
 
-    cmd = "arecord -D dmic_sv -c2 -r 16000 -f S32_LE -d {} -t wav -q -vv -V streo stream.raw;sox stream.raw -c 1 stream.flac;rm stream.raw".format(timeout)
-    os.system(cmd)
+    #cmd = "arecord -D dmic_sv -c2 -r 16000 -f S32_LE -d {} -t wav -q -vv -V streo stream.raw;sox stream.raw -c 1 -b 16 stream.wav;rm stream.raw".format(timeout)
+    #os.system(cmd)
     # Loads the audio into memory
-    with io.open(filename, 'rb') as audio_file:
-      content = audio_file.read()
-      audio = types.RecognitionAudio(content=content)
+    #with io.open(filename, 'rb') as audio_file:
+    #  content = audio_file.read()
+    #  audio = types.RecognitionAudio(content=content)
 
-    config = types.RecognitionConfig(
-      encoding=enums.RecognitionConfig.AudioEncoding.FLAC,
-      sample_rate_hertz=self.sample_rate,
-      language_code=lang)
+    #config = types.RecognitionConfig(
+    #  encoding=enums.RecognitionConfig.AudioEncoding.FLAC,
+    #  sample_rate_hertz=self.sample_rate,
+    #  language_code=lang)
 
     # Detects speech in the audio file
-    response = self.client.recognize(config, audio)
-    results = []
-    for result in response.results:
-      results.append(result.alternatives[0].transcript)
-    return results
+    #response = self.client.recognize(config, audio)
+    #results = []
+    #for result in response.results:
+    #  results.append(result.alternatives[0].transcript)
+    #return results
+
+    '''curl -v "https://kakaoi-newtone-openapi.kakao.com/v1/recognize" \
+    -H "Transfer-Encoding: chunked" -H "Content-Type: application/octet-stream" \
+    -H "Authorization: KakaoAK dabfb05367a032764b5688f1602643a5" \
+    --data-binary @stream.wav '''
+
+    url = 'https://kakaoi-newtone-openapi.kakao.com/v1/recognize'
+    headers = {
+      'Content-Type': 'application/octet-stream',
+      'Authorization': 'KakaoAK ' + self.kakao_account
+    }
+
+    data = open(filename, 'rb').read()
+    res = requests.post(url, headers=headers, data=data)
+    result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
+    result = json.loads(result_json_string)
+    #print(result)
+    return result['value']
 
 class cDialog:
   #"dialog_path":"/home/pi/openpibo/lib/text/data/dialog.csv"
