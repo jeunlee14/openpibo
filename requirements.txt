@@ -11,4 +11,4 @@ konlpy==0.5.2
 future==0.18.2
 #google-cloud-texttospeech==2.2.0
 #gtts==2.1.1
-google_trans_new
+google_trans_new==1.1.9
