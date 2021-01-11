@@ -53,8 +53,8 @@ class cSpeech:
     #if self.google_account == None:
     #  return False
 
-    #cmd = "arecord -D dmic_sv -c2 -r 16000 -f S32_LE -d {} -t wav -q -vv -V streo stream.raw;sox stream.raw -c 1 -b 16 stream.wav;rm stream.raw".format(timeout)
-    #os.system(cmd)
+    cmd = "arecord -D dmic_sv -c2 -r 16000 -f S32_LE -d {} -t wav -q -vv -V streo stream.raw;sox stream.raw -c 1 -b 16 stream.wav;rm stream.raw".format(timeout)
+    os.system(cmd)
     # Loads the audio into memory
     #with io.open(filename, 'rb') as audio_file:
     #  content = audio_file.read()
