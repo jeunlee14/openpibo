@@ -11,7 +11,7 @@ class cOled:
   def __init__(self, conf=None):
     self.width = 128
     self.height = 64
-    self.font_path = conf.PROC_PATH+"/NanumGothic.ttf"
+    self.font_path = conf.PROC_PATH+"/KDL.ttf" # KoPub Dotum Light
     self.font_size = 10
 
     spi = busio.SPI(11, 10, 9)
