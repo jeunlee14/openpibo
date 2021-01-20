@@ -59,7 +59,10 @@ class cSpeech:
 
     data = open(filename, 'rb').read()
     res = requests.post(url, headers=headers, data=data)
-    result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
+    try:
+      result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
+    except Exception as ex:
+      result_json_string = res.text[res.text.index('{"type":"errorCalled"'):res.text.rindex('}')+1]
     result = json.loads(result_json_string)
     return result['value']
 
