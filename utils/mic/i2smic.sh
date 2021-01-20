@@ -108,6 +108,9 @@ sed -i -e 's/#dtparam=i2s/dtparam=i2s/g' /boot/config.txt
 cd ../../
 cp ./asoundrc /home/pi/.asoundrc
 
+cat /usr/share/alsa/alsa.conf asoundrc > tmp
+mv tmp /usr/share/alsa/alsa.conf
+
 # Done
 echo "DONE."
 echo
