@@ -1,5 +1,6 @@
 #!/bin/bash
 sudo apt update
+sudo apt install fonts-unfonts-core -y
 sudo apt install ftp vim sox -y
 sudo apt install libhdf5-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test -y
 sudo apt install tesseract-ocr tesseract-ocr-kor -y
