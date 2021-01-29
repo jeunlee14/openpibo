@@ -2,6 +2,7 @@ import serial
 import time
 import os
 import json
+import pprint
 
 class cMotion:
   #"profile_path":"/home/pi/openpibo/lib/motion/motion_db.json"
@@ -32,10 +33,11 @@ class cMotion:
   def set_acceleration(self, n, accl):
     os.system("servo accelerate {} {}".format(n, accl))
 
-  def get_motion(self, name):
+  def get_motion(self, name=None):
     ret = self.profile.get(name)
-    ret = self.profile if ret == None else ret
-    return ret
+    pp = pprint.PrettyPrinter()
+    ret = self.profile.keys() if ret == None else ret
+    pp.pprint(ret)
 
   def set_motion(self, name, cycle=1):
     ret = True
