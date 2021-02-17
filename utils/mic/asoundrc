@@ -25,3 +25,17 @@ pcm.dmic_sv {
 	min_dB -3.0
 	max_dB 30.0
 }
+
+pcm.!default {
+  type asym
+   playback.pcm {
+     type plug
+     slave.pcm "hw:0,0"
+   }
+   capture.pcm {
+     type plug
+     #slave.pcm "hw:1,0"
+     slave.pcm dmic_hw
+   }
+}
+
