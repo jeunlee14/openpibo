@@ -37,14 +37,6 @@ sudo apt install tesseract-ocr-kor -y
 
 <pre>
 <code>
-# oled
-sudo pip3 install adafruit-circuitpython-ssd1306==2.8.2
-sudo pip3 install pillow==5.4.1
-</code>
-</pre>
-
-<pre>
-<code>
 # konlpy
 sudo apt install openjdk-8-jdk curl -y
 sudo pip3 install konlpy
