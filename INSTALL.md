@@ -18,9 +18,10 @@ reboot
 </code>
 </pre>
 
-* vision
+* 분야 별 참고사항
 <pre>
 <code>
+# vision
 sudo pip3 install opencv-python==4.1.0.25
 sudo pip3 install opencv-contrib-python==4.1.0.25
 sudo pip3 install dlib==19.19.0
@@ -34,17 +35,17 @@ sudo apt install tesseract-ocr-kor -y
 </code>
 </pre>
 
-* oled
 <pre>
 <code>
+# oled
 sudo pip3 install adafruit-circuitpython-ssd1306==2.8.2
 sudo pip3 install pillow==5.4.1
 </code>
 </pre>
 
-* konlpy
 <pre>
 <code>
+# konlpy
 sudo apt install openjdk-8-jdk curl -y
 sudo pip3 install konlpy
 bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)
@@ -53,10 +54,10 @@ bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/me
 </code>
 </pre>
 
-* ext
 <pre>
 <code>
- - wifi 절전해제 : 해당 파일 없음
+# 기타 설정 사항
+- wifi 절전해제 : 해당 파일 없음
 sudo vi /etc/modprobe.d/8192cu.conf
  edit "options 8192cu rtw_power_mgnt=0 rtw_enusbss=0"
 
@@ -81,10 +82,10 @@ sudo vi /etc/modprobe.d/8192cu.conf
 </code>
 </pre>
 
-* boot
 <pre>
 <code>
- - edit /etc/rc.local
+# boot 관련 설정
+- edit /etc/rc.local
 
  - Print the IP address
 _IP=$(hostname -I) || true
@@ -97,18 +98,18 @@ exit 0
 </code>
 </pre>
 
-* mic
 <pre>
 <code>
-  - .asoundrc
+# mic 설정
+- .asoundrc
   local -> /home/pi/.asoundrc
   global -> /usr/share/alsa/alsa.conf
 </code>
 </pre>
 
-* splash
 <pre>
 <code>
+# splash 설정
 #Raspberry Pi booting logo image changing 
 
 sudo cp samplelogo.png /usr/share/plymouth/themes/pix/splash.png  
