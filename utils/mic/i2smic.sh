@@ -79,7 +79,7 @@ AUTO_LOAD=0
 
 echo
 echo "Installing..."
-
+apt-get update && sudo apt-get install --reinstall raspberrypi-bootloader raspberrypi-kernel
 # Get needed packages
 apt-get -y install git raspberrypi-kernel-headers
 
