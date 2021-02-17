@@ -4,7 +4,8 @@ sudo apt install fonts-unfonts-core -y
 sudo apt install ftp vim sox -y
 sudo apt install libhdf5-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test -y
 sudo apt install tesseract-ocr tesseract-ocr-kor -y
-sudo apt install curl openjdk-8-jdk -y
+sudo apt install curl cmake openjdk-8-jdk -y
+
 sudo pip3 install -r requirements.txt
 bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)
 wget https://project-downloads.drogon.net/wiringpi-latest.deb
