@@ -1,0 +1,19 @@
+#!/bin/bash
+dpkg -i raspberrypi-kernel-headers_1.20201126-1_armhf.deb 
+apt update
+apt install fonts-unfonts-core -y
+apt install ftp vim sox -y
+apt install libhdf5-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test -y
+apt install tesseract-ocr tesseract-ocr-kor -y
+apt install curl cmake openjdk-8-jdk -y
+#apt install --reinstall raspberrypi-bootloader raspberrypi-kernel -y
+
+pip3 install -r requirements.txt
+bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)
+wget https://project-downloads.drogon.net/wiringpi-latest.deb
+dpkg -i wiringpi-latest.deb
+rm wiringpi-latest.deb
+systemctl disable hciuart.service
+cd lib/servo;make;sudo make install;make clean
+cd ../../utils/mic
+./i2smic.sh
