@@ -1,5 +1,4 @@
 #!/bin/bash
-sleep 20
 EIP=$(ifconfig eth0 | grep "inet " | awk '{print $2}') || true
 SSID=$(iw wlan0 info | grep ssid | awk '{print $2}') || true
 WIP=$(ifconfig wlan0 | grep "inet " | awk '{print $2}') || true
