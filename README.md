@@ -3,3 +3,6 @@
 ```
 sudo ./install.sh
 ```
+
+Test Environment
+https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2020-12-04/2020-12-02-raspios-buster-armhf-lite.zip
