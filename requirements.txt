@@ -9,4 +9,5 @@ future==0.18.2
 google_trans_new==1.1.9
 pillow==7.2.0
 RPi.gpio==0.7.0
+pyserial==3.5
 #adafruit-circuitpython-ssd1306==2.8.2
