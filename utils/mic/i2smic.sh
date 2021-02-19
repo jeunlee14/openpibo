@@ -70,11 +70,18 @@ echo
 #        "Pi 2 or 3" \
 #        "Pi 4"
 #PIMODEL_SELECT=$(($?-1))
-
 #ask "Auto load module at boot?"
 #AUTO_LOAD=$?
 
-PIMODEL_SELECT=2
+MODEL=$(tr -d '\0' </proc/device-tree/model)
+echo $MODEL "detected"
+if [[ $MODEL == *"Pi 3"* ]];then
+  PIMODEL_SELECT=1
+fi
+
+if [[ $MODEL == *"Pi 4"* ]];then
+  PIMODEL_SELECT=2
+fi
 AUTO_LOAD=0
 
 echo
