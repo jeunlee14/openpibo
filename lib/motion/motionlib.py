@@ -2,7 +2,6 @@ import serial
 import time
 import os
 import json
-import pprint
 
 class cMotion:
   #"profile_path":"/home/pi/openpibo/lib/motion/motion_db.json"
@@ -35,9 +34,8 @@ class cMotion:
 
   def get_motion(self, name=None):
     ret = self.profile.get(name)
-    pp = pprint.PrettyPrinter()
-    ret = self.profile.keys() if ret == None else ret
-    pp.pprint(ret)
+    ret = list(self.profile.keys()) if ret == None else ret
+    return ret
 
   def set_motion(self, name, cycle=1):
     ret = True
@@ -45,11 +43,19 @@ class cMotion:
 
     if exe == None:
       ret = False
-      print("profile not exist", name)
+      return ret
+      # print("profile not exist", name)
     else:
       seq,cnt,cycle_cnt = 0,0,0
       self.stopped = False
 
+      if exe["init_def"] == 1:
+        self.set_motors(exe["init"], seq)
+      
+      if "pos" not in exe:
+        return ret
+
+      time.sleep(0.5)
       while True:
         if self.stopped:
           break
