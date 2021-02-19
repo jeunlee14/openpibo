@@ -239,7 +239,7 @@ class Edu_Pibo:
 
     # [Vision] - start_camera thread
     def camera_on(self):
-        vs = VideoStream(width=128, height=64).start()
+        vs = VideoStream().start()
 
         while True:
             if self.onair == False:
@@ -247,7 +247,9 @@ class Edu_Pibo:
                 self.oled.clear()
                 break
             self.img = vs.read()
-            self.oled.draw_streaming(self.img)
+            img = self.img
+            img = cv2.resize(img, (128,64))
+            self.oled.draw_streaming(img)
             self.oled.show()
 
 
@@ -258,6 +260,7 @@ class Edu_Pibo:
 
         self.onair = True
         t = Thread(target=self.camera_on, args=())
+        t.daemon = True
         t.start()
         return True, None
 
@@ -268,6 +271,7 @@ class Edu_Pibo:
             return False, None
 
         self.onair = False
+        time.sleep(0.5)
         return True, None
 
 
