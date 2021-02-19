@@ -110,7 +110,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 > mp3, wav 파일을 재생 및 정지합니다.
 
-- `pibo.play(filename, out, volume)`
+- `pibo.play_audio(filename, out, volume)`
 
   - 기능: mp3 파일 또는 wav 파일을 재생합니다.
   - 매개변수
@@ -124,7 +124,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   pibo.play(filename=cfg.TESTDATA_PATH+"/test.mp3", out='local', volume=-2000)
   ```
 
-- `pibo.stop()`
+- `pibo.stop_audio()`
 
   - 기능: 오디오 재생을 정지합니다.
   - 반환값

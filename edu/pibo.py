@@ -19,7 +19,6 @@ from threading import Thread
 
 class Edu_Pibo:
     def __init__(self):
-        self.ret = True
         self.onair = False
         self.img = ""
         self.audio = cAudio()
@@ -34,15 +33,15 @@ class Edu_Pibo:
 
 
     # [Audio] - mp3/wav 파일 재생
-    def play(self, filename, out='local', volume='-2000'):
+    def play_audio(self, filename, out='local', volume='-2000'):
         self.audio.play(filename, out, volume)
-        return self.ret, None
+        return True, None
 
 
     # [Audio] - 오디오 재생 정지
-    def stop(self):
+    def stop_audio(self):
         self.audio.stop()
-        return self.ret, None
+        return True, None
 
 
     # [Neopixel] - LED ON
@@ -73,13 +72,13 @@ class Edu_Pibo:
         else:
             return False, None
 
-        return self.ret, None
+        return True, None
 
 
     # [Neopixel] - LED OFF
     def eye_off(self):
         self.device.send_raw("#20:0,0,0:!")
-        return self.ret, None
+        return True, None
 
 
     # [Device] - 부품 상태 확인
@@ -98,7 +97,7 @@ class Edu_Pibo:
             ret = self.device.send_cmd(device_list[system])
             ans = system + ': ' + ret[3:]
 
-            return self.ret, ans
+            return True, ans
         else:
             if system == "PIR":
                 self.device.send_cmd(device_list[system], "on")
@@ -107,7 +106,7 @@ class Edu_Pibo:
             ret = self.device.send_cmd(device_list["SYSTEM"])
             ans = system + ': ' + ret[3:]
 
-            return self.ret, ans
+            return True, ans
 
 
     # [Motion] - 모터 1개 제어(위치/속도/가속도)
@@ -123,7 +122,7 @@ class Edu_Pibo:
         self.motion.set_acceleration(n, accel)
         self.motion.set_motor(n, position)
 
-        return self.ret, None
+        return True, None
 
 
     # [Motion] - 모든 모터 제어(위치/속도/가속도)
@@ -139,19 +138,19 @@ class Edu_Pibo:
             os.system("servo accelerate all {}".format(" ".join(map(str, accel))))
             os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
 
-        return self.ret, None
+        return True, None
 
 
     # [Motion] - 모든 모터 제어(movetime)
     def motors_movetime(self, positions, movetime=None):
         self.motion.set_motors(positions, movetime)
-        return self.ret, None
+        return True, None
 
 
     # [Motion] - 모션 종류 또는 모션 상세 정보 조회
     def get_motion(self, name=None):
         ret = self.motion.get_motion(name)
-        return self.ret, ret
+        return True, ret
 
 
     # [Motion] - 모션 수행
@@ -166,7 +165,7 @@ class Edu_Pibo:
     def draw_text(self, points, text, size=None):
         self.oled.set_font(size=size)
         self.oled.draw_text(points, text)
-        return self.ret, None
+        return True, None
 
 
     # [OLED] - 이미지
@@ -176,7 +175,7 @@ class Edu_Pibo:
             return False, "128X64 파일만 가능합니다."
 
         self.oled.draw_image(filename)
-        return self.ret, None 
+        return True, None 
 
 
     # [OLED] - 도형
@@ -190,31 +189,31 @@ class Edu_Pibo:
         else:
             self.draw_text((8,20), '다시 입력해주세요', 15)
             return False, None
-        return self.ret, None
+        return True, None
 
 
     # [OLED] - 반전
     def invert(self):
         self.oled.invert()
-        return self.ret, None
+        return True, None
 
 
     # [OLED] - 화면 출력
     def show_display(self):
         self.oled.show()
-        return self.ret, None
+        return True, None
 
 
     # [OLED] - 화면 지움
     def clear_display(self):
         self.oled.clear()
-        return self.ret, None
+        return True, None
 
 
     # [Speech] - 문장 번역
     def translate(self, string, to='ko'):
         ret = self.speech.translate(string, to)
-        return self.ret, ret
+        return True, ret
 
 
     # [Speech] - TTS
@@ -223,19 +222,19 @@ class Edu_Pibo:
             return False, None
 
         self.speech.tts(string, filename, lang)
-        return self.ret, None
+        return True, None
 
 
     # [Speech] - STT
     def stt(self, filename='stream.wav', lang='ko-KR', timeout=5):
         self.speech.stt(filename, lang, timeout)
-        return self.ret, None
+        return True, None
 
 
     # [Speech] - 대화
     def conversation(self, q):
         ret = self.dialog.get_dialog(q)
-        return self.ret, ret
+        return True, ret
 
 
     # [Vision] - start_camera thread
@@ -260,7 +259,7 @@ class Edu_Pibo:
         self.onair = True
         t = Thread(target=self.camera_on, args=())
         t.start()
-        return self.ret, None
+        return True, None
 
 
     # [Vision] - 카메라 OFF
@@ -269,7 +268,7 @@ class Edu_Pibo:
             return False, None
 
         self.onair = False
-        return self.ret, None
+        return True, None
 
 
     # [Vision] - 사진 촬영
@@ -281,7 +280,7 @@ class Edu_Pibo:
             self.camera.imwrite(filename, img)
             self.oled.draw_image(filename)
             self.oled.show()
-        return self.ret, None
+        return True, None
 
 
     # [Vision] - 객체 인식
@@ -291,29 +290,29 @@ class Edu_Pibo:
         else:
             img = self.camera.read()
         ret = self.detect.detect_object(img)
-        return self.ret, ret
+        return True, ret
 
 
     # [Vision] - QR/바코드 인식
     def search_qr(self):
         if self.onair:
             ret = self.detect.detect_qr(self.img)
-            return self.ret, ret
+            return True, ret
         else:
             img = self.camera.read()
             ret = self.detect.detect_qr(img)
-            return self.ret, ret
+            return True, ret
 
 
     # [Vision] - 문자 인식
     def search_text(self):
         if self.onair:
             ret = self.detect.detect_text(self.img)
-            return self.ret, ret
+            return True, ret
         else:
             img = self.camera.read()
             ret = self.detect.detect_text(img)
-            return self.ret, ret
+            return True, ret
 
 
     # [Vision] - 컬러 인식
@@ -350,7 +349,7 @@ class Edu_Pibo:
         result = self.camera.putText(img, "{}/ {} {}".format(name, gender, age), (x-10, y-10), size=0.5)
         # self.camera.imwrite(filename, result)
 
-        return self.ret, {"name": name, "score": score, "gender": gender, "age": age}
+        return True, {"name": name, "score": score, "gender": gender, "age": age}
 
 
     # [Vision] - 얼굴 학습
@@ -371,25 +370,25 @@ class Edu_Pibo:
     # [Vision] - 사용 중인 facedb 확인
     def get_facedb(self):
         facedb = self.face.get_db()
-        return self.ret, facedb
+        return True, facedb
 
 
     # [Vision] - facedb 초기화
     def init_facedb(self):
         self.face.init_db()
-        return self.ret, None
+        return True, None
 
 
     # [Vision] - facedb 불러옴
     def load_facedb(self, filename):
         self.face.load_db(filename)
-        return self.ret, None
+        return True, None
 
 
     # [Vision] - facedb를 파일로 저장
     def save_facedb(self, filename):
         self.face.save_db(filename)
-        return self.ret, None
+        return True, None
 
 
     # [Vision] - facedb에 등록된 얼굴 삭제
