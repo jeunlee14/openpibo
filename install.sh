@@ -13,6 +13,7 @@ apt install libhdf5-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test -y
 apt install tesseract-ocr tesseract-ocr-kor -y
 apt install curl cmake openjdk-8-jdk -y
 apt install omxplayer -y
+apt install libilmbase23 libopenexr-dev libswscale-dev libzbar0 -y
 #apt install --reinstall raspberrypi-bootloader raspberrypi-kernel -y
 
 pip3 install -r requirements.txt
