@@ -1,5 +1,3 @@
-# 교육용 API
-
 ##  1. 설치 및 실행
 
 ### 1.1 설치
@@ -71,18 +69,18 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 파이보의 기능 테스트를 위한 예제 파일을 생성합니다. 
 
-`openpibo/edu/pibo.py`에 있는 Edu_Pibo 클래스를 호출하여 객체 생성 후 클래스 내의 함수를 사용합니다.
+`openpibo/edu/pibo.py`에 있는 Edu_Pibo 클래스를 호출하여 객체 생성 후 클래스 내의 메서드를 사용합니다.
 
 코드는 아래와 같이 구성할 수 있습니다.
 
 ![파일구성](README_Images/파일구성.png)
 
 1. 라이브러리 호출 및 경로 설정
-   - 코드를 작성하기 위해 필요한 라이브러리를 호출하고 경로를 설정합니다.
+   - 코드 작성에 필요한 라이브러리를 호출하고 경로를 설정합니다.
    - `openpibo/edu/pibo.py`에 있는 Edu_Pibo 클래스를 호출합니다. ( `from {module} import {class}` )
 2. 함수 작성
-   - Edu_Pibo 클래스 내의 함수를 활용하여 테스트를 위한 코드를 작성합니다.
-   - `time.sleep()`: 일정 시간동안 프로세스를 정지하는 함수입니다. (단위: 초)
+   - Edu_Pibo 클래스 내의 메서드를 활용하여 테스트 코드를 작성합니다.
+   - `time.sleep()`: 일정 시간동안 프로세스를 정지하는 함수입니다. (단위: 초 / `import time`)
 3. 함수 실행을 위한 코드 (`if __name__ == "__main__"` )
    - `__name__`: 현재 모듈의 이름을 담고 있는 내장 변수입니다.
    - 해당 프로그램을 직접 실행했을 경우, 참이 되어 main 함수를 실행합니다.
@@ -106,7 +104,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 
 
-## 2. 기능
+## 2. APIs
 
 ### 2.1 Audio
 
@@ -119,6 +117,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - filename: 재생할 파일의 경로(mp3 / wav)
     - out: 출력대상(local-3.5mm잭 / hdmi / both) [default: local]
     - volume: 음량 크기 (단위: mdB=1/1000dB) [default: -2000]
+  - 반환값
+    - True(성공)/False(실패), None
 
   ```python
   pibo.play(filename=cfg.TESTDATA_PATH+"/test.mp3", out='local', volume=-2000)
@@ -127,6 +127,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 - `pibo.stop()`
 
   - 기능: 오디오 재생을 정지합니다.
+  - 반환값
+    - True(성공)/False(실패), None
 
 ### 2.2 Neopixel
 
@@ -138,7 +140,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 매개변수
 
-    - color: 색상 - RGB (0~255 숫자) / color(영문-대소문자 모두 가능)
+    - color: 색상 - RGB (0~255 숫자) / color(영어 대소문자 모두 가능)
 
       ( color_list: black, white, red, orange, yellow, green, blue, aqua, purple, pink )
     
@@ -149,9 +151,14 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   pibo.eye_on('Red') #'RED', 'red' 가능
   ```
 
+  - 반환값
+    - True(성공)/False(실패), None
+
 - `pibo.eye_off()`
 
   - 기능: LED를 끕니다.
+  - 반환값
+    - True(성공)/False(실패), None
 
 ### 2.3 Device
 
@@ -161,9 +168,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 부품의 상태를 확인합니다.
   - 매개변수
-    - system: 확인할 부품 (PIR, Touch, Button, Battery, DC - 영문-대소문자 모두 가능)
+    - system: 확인할 부품 (PIR, Touch, Button, Battery, DC - 영어 대소문자 모두 가능)
   - 반환값
-    - data: Device로부터 받은 응답
+    - True(성공)/False(실패),  Device로부터 받은 응답
 
   ```python
   pibo.check_device("battery")
@@ -181,6 +188,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - position: 모터 각도(-80~80)
     - speed: 모터 속도(0~255) [default: None]
     - accel: 모터 가속도(0~255) [default: None]
+  - 반환값
+    - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.motor(1, 30, 100, 15)
@@ -193,6 +203,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - position: 모터 각도(-80~80) 배열( [...] )
     - speed: 모터 속도(0~255) 배열( [...] ) [default: None]
     - accel: 모터 가속도(0~255) 배열( [...] ) [default: None]
+  - 반환값
+    - True(성공)/False(실패), None
 
   ```python
   pibo.motors(positions=[-10,-20,40,0,-10,50,20,20,40,70], speed=[0,0,7,0,80,50, 10,10,20,70], accel=[0,0,30,20,30,0,0,0,30,20])
@@ -204,6 +216,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - positions: 0~9번 모터 각도 배열( [...] )
     - movetime: 모터 이동 시간(ms) - 모터가 정해진 위치까지 이동하는 시간 [default: None]
+  - 반환값
+    -  True(성공)/False(실패), None
 
   ```python
   pibo.motors_movetime(positions=[0,0,30,20, 30,0, 0,0,30,20], movetime=1000)
@@ -213,20 +227,12 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 - `pibo.get_motion(name)`
 
   - 기능: 모션 종류 및 정보를 조회합니다.
-
   - 매개변수
 
     - name: 모션 이름 [default: None]
-
   - 반환값
-
-    - data: 프로파일 객체
-
-      - name == None: 모션 목록 전체 조회
-
-        ( stop(2), sleep, lookup, left(2), right(2), forward(2), backward(2),  step(2), hifive, cheer(3), wave(6), think(4), wake_up(3), hey(2),  yes/no, breath(4), head, spin, clapping(2), hankshaking, bow, greeting,  hand(4), foot(2),  speak(9),  welcome, 표정(10), handup(2), look(2),  dance(5), test(5) -  괄호 안은 개수를 의미)
-
-      - name != None: 해당 모션 상세 정보 조회 (init, pos ...)
+    - True(성공), 모션 종류(name==None)/해당 모션 상세 정보 조회(name!=None)
+    - False(실패), None
 
   ```python
   # 모션 목록 조회
@@ -235,12 +241,19 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   pibo.get_motion("cheer3")
   ```
 
+  > [전체 모션 리스트]
+  >
+  > stop(2), sleep, lookup, left(2), right(2), forward(2), backward(2),  step(2), hifive, cheer(3), wave(6), think(4), wake_up(3), hey(2),  yes/no, breath(4), head, spin, clapping(2), hankshaking, bow, greeting,  hand(4), foot(2),  speak(9),  welcome, 감정(10), handup(2), look(2),  dance(5), test(5) -  괄호 안은 개수를 의미
+
 - `pibo.set_motion(name, cycle)`
 
   - 기능: 모션의 동작을 실행합니다.
   - 매개변수
     - name: 모션 이름
     - cycle: 모션 반복 횟수
+  - 반환값
+    - True(성공), None
+    - False(실패), "Profile not exist {name}"
   
   ```python
   pibo.set_motion("dance1", 5)
@@ -250,6 +263,10 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 > OLED Display에 문자, 이미지, 도형을 출력합니다.
 
+OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로 문자나 도형을 그립니다. 만약 좌측상단 좌표가 (10, 10), 우측하단 좌표가 (50, 50)라면 위치는 아래와 같습니다.
+
+![OLED_coordinate](README_Images/OLED_coordinate.png) 
+
 - `pibo.draw_text(points, text, size)`
 
   - 기능: 문자를 씁니다. (한글/영어)
@@ -257,6 +274,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     -  points: 문자열의 좌측상단 좌표 튜플(x,y)
     - text: 문자열 내용
     - size: 폰트 크기 [default: 10]
+  - 반환값
+    - True(성공)/False(실패), None
 
   ```python
   pibo.draw_text((10, 10), '안녕하세요.', 15)
@@ -264,10 +283,13 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 - `pibo.draw_image(filename)`
 
-  - 기능: 그림을 그립니다. (128X64 png 파일)
+  - 기능: 그림을 그립니다. (128X64 파일)
     - 다른 크기의 파일은 지원하지 않습니다.
   - 매개변수
     - filename: 그림 파일의 경로
+  - 반환값
+    - True(성공), None
+    - False(실패), "128X64 파일만 가능합니다."
 
   ```python
   pibo.draw_image(cfg.TESTDATA_PATH +"/clear.png")
@@ -280,6 +302,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - points: 선 - 시작 좌표, 끝 좌표(x, y, x1, y1) / 사각형, 원 - 좌측상단, 우측하단 좌표 튜플(x, y, x1, y1)
     - shape: 도형 종류 - rectangle(사각형, 네모) / circle(원, 동그라미, 타원) / line(선, 직선)
     - fill: True(채움), False(채우지 않음) [default: False]
+  - 반환값
+    - True(성공)/False(실패), None
 
   ```python
   pibo.draw_figure((10,10,30,30), "rectangle", True)
@@ -290,14 +314,20 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 - `pibo.invert()`
 
   - 기능: 이미지를 반전시킵니다. (색 반전)
+  - 반환값
+    - True(성공)/False(실패), None
 
 - `pibo.show_display()`
 
   - 기능: 화면에 표시합니다.
+  - 반환값
+    - True(성공)/False(실패), None
 
 - `pibo.clear_display()`  
 
   - 기능: 화면을 지웁니다.
+  - 반환값
+    - True(성공)/False(실패), None
 
 ### 2.7 Speech
 
@@ -310,7 +340,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - string: 번역할 문장
     - to: 번역할 언어(한글-ko / 영어-en) [default: ko]
   - 반환값
-    - ret: 번역된 문장
+    - True(성공)/False(실패), 번역된 문장
 
   ```python
   pibo.translate('즐거운 금요일', 'en')
@@ -319,6 +349,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 - `pibo.tts(string, filename, lang)`
 
   - 기능: Text(문자)를 Speech(음성)로 변환합니다.
+
   - 매개변수
     - string: 변환할 문장
 
@@ -352,13 +383,17 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
               <voice name="MAN_READ_CALM"> 지금은 남성 차분한 낭독체입니다.</voice>
               <voice name="WOMAN_DIALOG_BRIGHT"> 안녕하세요. 여성 밝은 대화체예요.</voice>
               <voice name="MAN_DIALOG_BRIGHT"> 안녕하세요. 남성 밝은 대화체예요.</voice>
-              </speak>
+        </speak>
         ```
       
-    - filename: 저장할 파일 이름(mp3)
+    - filename: 저장할 파일 이름(mp3) [default: tts.mp3]
 
     - lang: 한글(ko) / 영어(en) [default: ko]
-  
+    
+  - 반환값
+
+    - True(성공)/False(실패), None
+
   ```python
   pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3", "ko")
   ```
@@ -370,6 +405,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - filename: 저장할 파일 이름 [default: stream.wav]
     - lang: 한글(ko) / 영어(en) [default: ko]
     - timeout: 녹음할 시간(초) [default: 5초]
+  - 반환값
+    - True(성공)/False(실패), None
 
   ```python
   pibo.stt()
@@ -381,7 +418,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - q: 질문
   - 반환값
-    - ret: 대답
+    - True(성공)/False(실패), 질문에 대한 응답
 
   ```python
   pibo.conversation('주말에 뭐하지?')
@@ -391,21 +428,30 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 > 파이보 영상처리 관련 동작을 수행합니다. (카메라 기능, 얼굴 인식/학습, 객체/바코드/문자 인식)
 >
-> 아래의 모든 함수는 카메라가 켜져있을 때 동작을 수행합니다.
 
 - `pibo.start_camera()`
   
   - 기능: 카메라가 촬영하는 영상을 OLED에 보여줍니다.
+  - 반환값
+    - True(성공)/False(실패), None
   
 - `pibo.stop_camera()`
 
   - 기능: 카메라를 종료합니다.
+  - 반환값
+    - True(성공)/False(실패), None
 
 - `pibo.capture(filename)` 
 
-  - 기능: 사진을 촬영하여 이미지로 저장하고 OLED에 보여줍니다.
+  - 기능: 사진을 촬영하여 이미지로 저장합니다.
   - 매개변수
-    - filename: 저장할 파일 이름 [default: 'capture.png']
+    
+    - filename: 저장할 파일 이름 [default: capture.png]
+    
+      (jpg, png 등 이미지 파일 형식 기입 필수)
+  - 반환값
+    
+    - True(성공)/False(실패), None
 
   ```python
   pibo.capture('test.png')
@@ -413,7 +459,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 - `pibo.search_object()`
 
-  - 기능: 촬영한 사진에 있는 객체를 인식합니다.
+  - 기능: 이미지 안의 객체를 인식합니다.
 
     - 인식 가능한 사물 목록
 
@@ -421,42 +467,87 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 반환값
 
-    - {"name": 이름, "score": 점수, "position": 사물좌표(startX, startY, endX, endY)}
+    - True(성공)/False(실패), {"name": 이름, "score": 점수, "position": 사물좌표(startX, startY, endX, endY)}
 
-- `pibo.search_qr()` --> 봇카드 형태로 제공
+- `pibo.search_qr()`
 
-  - 기능: 촬영한 사진에 있는 QR 코드 및 바코드를 인식합니다.
+  - 기능: 이미지 안의 QR 코드 및 바코드를 인식합니다.
   - 반환값
-    - ret: {"data": 내용, "type": 바코드/QR코드}
+    - True(성공)/False(실패), {"data": 내용, "type": 바코드/QR코드}
 
 - `pibo.search_text()` 
 
-  - 기능: 촬영한 사진에 있는 문자를 인식합니다.
+  - 기능: 이미지 안의 문자를 인식합니다.
   - 반환값
-    - ret: 인식된 문자열
+    - True(성공)/False(실패), 인식된 문자열
 
-- `pibo.search_color()` --> 봇카드 형태로 제공      *색깔 구별 메서드 구현*
+- `pibo.search_color()`
 
-  - 기능: 촬영한 사진에 있는 색상을 인식합니다.
+  - 기능: 이미지 안의 색상을 인식합니다.
   - 반환값
-    - ret: 인식된 색상
+    - True(성공)/False(실패), 인식된 색상
 
-- `pibo.search_face()`
+- `pibo.search_face(filename)`
 
-  - 기능: 사진 촬영 후, 얼굴을 인식하여 정보를 제공합니다.
+  - 기능: 이미지 안의 얼굴을 인식하여 정보를 제공합니다.
+  - 매개변수
+    - filename: 저장할 파일 이름 [default: 'face.png']
   - 반환값
-    - ret: {"name:"이름, "gender:"성별, "age:"나이} 
+    - True(성공), {"name:"이름, "gender:"성별, "age:"나이}
+    - False(실패), "No Face" 
+
+  ```python
+  pibo.search_face("face.png")
+  ```
 
 - `pibo.train_face(name)`
 
-  - 기능: 얼굴을 학습하여 facedb에 저장합니다.
+  - 기능: 사진 촬영 후 얼굴을 학습합니다.
   - 매개변수
     - name: 학습할 얼굴의 이름
   - 반환값
-    - Train: 학습한 이름
+    - True(성공),  None
+    - False(실패), "No Face" 
 
   ```python
-  pibo.train_face("홍길동")
+  pibo.train_face("kim")
+  ```
+
+- `pibo.get_facedb()`
+
+  - 기능: 사용 중인 facedb를 확인합니다.
+  - 반환값
+    - True(성공), 현재 로드된 facedb
+    - False(실패), None
+
+- `pibo.init_facedb()`
+
+  - 기능: facedb를 초기화합니다.
+  - 반환값
+    - True(성공)/False(실패), None
+
+- `pibo.save_facedb(filname)`
+
+  - 기능: facedb를 파일로 저장합니다.
+  - 매개변수
+    - filename: 저장할 데이터베이스 파일 이름
+  - 반환값
+    - True(성공)/False(실패), None
+  
+  ```python
+  pibo.save_facedb("./facedb")
+  ```
+
+- `pibo.load_facedb(filename)`
+
+  - 기능: facedb를 불러옵니다.
+  - 매개변수
+    - filename: 불러올 facedb 파일 이름
+  - 반환값
+    - True(성공)/False(실패), None
+
+  ```python
+  pibo.load_facedb("facedb")
   ```
 
 
@@ -466,15 +557,16 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - name: 삭제할 얼굴 이름
   - 반환값
-    - ret: True(성공) / False(실패)
+    - ret: True(성공)/False(실패), None
 
   ```python
-  pibo.train_face("홍길동")
+  pibo.train_face("kim")
   ```
 
-- `pibo.train_myObject(name)`  *보류*
-- 기능: 객체를 학습합니다.
+- `pibo.train_myObject(name)`  
+
+  - 기능: 객체를 학습합니다.
   - 매개변수
     - name: 학습할 객체 이름
   - 반환값
-    - 
+    - ret: True(성공)/False(실패)
