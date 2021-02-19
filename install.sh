@@ -1,6 +1,4 @@
 #!/bin/bash
-wget https://archive.raspberrypi.org/debian/pool/main/r/raspberrypi-firmware/raspberrypi-kernel-headers_1.20201126-1_armhf.deb
-dpkg -i raspberrypi-kernel-headers_1.20201126-1_armhf.deb
 apt update
 apt install fonts-unfonts-core -y
 apt install ftp vim sox -y
@@ -10,9 +8,6 @@ apt install tesseract-ocr tesseract-ocr-kor -y
 apt install curl cmake openjdk-8-jdk -y
 apt install omxplayer -y
 #apt install --reinstall raspberrypi-bootloader raspberrypi-kernel -y
-
-# for wlan
-sudo rfkill unblock wiki sudo rfkill unblock all
 
 pip3 install -r requirements.txt
 bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)
