@@ -176,7 +176,7 @@ class Edu_Pibo:
             return False, "128X64 파일만 가능합니다."
 
         self.oled.draw_image(filename)
-        return self.ret, None
+        return self.ret, None 
 
 
     # [OLED] - 도형

@@ -104,7 +104,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 
 
-## 2. APIs
+## 2. APIs 
 
 ### 2.1 Audio
 
