@@ -80,7 +80,7 @@ AUTO_LOAD=0
 echo
 echo "Installing..."
 # Get needed packages
-apt-get -y install git raspberrypi-kernel-headers
+#apt-get -y install git raspberrypi-kernel-headers
 
 # Clone the repo
 git clone https://github.com/adafruit/Raspberry-Pi-Installer-Scripts.git

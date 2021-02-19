@@ -11,10 +11,7 @@ lib/ - 라이브러리 모음
 * 사전설치
 <pre>
 <code>
-sudo ./install1.sh
-reboot
-sudo ./install2.sh
-reboot
+sudo ./install.sh
 </code>
 </pre>
 
