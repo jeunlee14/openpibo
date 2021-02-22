@@ -21,6 +21,7 @@ class Edu_Pibo:
     def __init__(self):
         self.onair = False
         self.img = ""
+        self.check = False
         self.audio = cAudio()
         self.oled = cOled(conf=cfg)
         self.speech = cSpeech(conf=cfg)
@@ -30,6 +31,7 @@ class Edu_Pibo:
         self.camera = cCamera()
         self.face = cFace(conf=cfg)
         self.detect = cDetect(conf=cfg)
+        self.device.send_cmd(self.device.code['PIR'], "on")
 
 
     # [Audio] - mp3/wav 파일 재생
@@ -81,41 +83,81 @@ class Edu_Pibo:
         return True, None
 
 
-    # [Device] - 부품 상태 확인
+
+    # [Device] - 디바이스 상태 확인
     def check_device(self, system):
-        device_list = {
-            "BUTTON":"13",
-            "DC":"14",
-            "BATTERY":"15",
-            "PIR":"30",
-            "TOUCH":"31",
-            "SYSTEM":"40",
-        }
         system = system.upper()
 
-        if system in  ( "BUTTON", "BATTERY", "DC"):
-            ret = self.device.send_cmd(device_list[system])
+        if system in  ("BATTERY"):
+            ret = self.device.send_cmd(self.device.code[system])
             ans = system + ': ' + ret[3:]
-
-            return True, ans
         else:
-            if system == "PIR":
-                self.device.send_cmd(device_list[system], "on")
-            else:
-                self.device.send_cmd(device_list[system])
-            ret = self.device.send_cmd(device_list["SYSTEM"])
-            ans = system + ': ' + ret[3:]
+            ret = self.device.send_cmd(self.device.code["SYSTEM"])
 
-            return True, ans
+            sys = ""
+            result = []
+            for i in ret[3:]:
+                if i == "-":
+                    result.append(sys)
+                    sys = ""
+                sys += i
+
+            system_dict = {"PIR": "-", "TOUCH": "-", "DC_CONN": "-", "BUTTON": "-",}
+            system_dict["PIR"] = result[0]
+            system_dict["TOUCH"] = result[1]
+            system_dict["DC_CONN"] = result[2]
+            system_dict["BUTTON"] = result[3]
+            ans = system_dict
+
+        return True, ans
+
+
+    # [Device] - start_devices thread
+    def thread_device(self, func):
+        self.system_check_time = time.time()
+        self.battery_check_time = time.time()
+
+        while True:
+            if self.check == False:
+                return
+
+            if time.time() - self.system_check_time > 1:
+                ret = self.device.send_cmd(self.device.code["SYSTEM"])
+                msg = "SYSTEM" + ': ' + ret[3:]
+                func(msg)
+                self.system_check_time = time.time()
+            
+            if time.time() - self.battery_check_time > 10:
+                ret = self.device.send_cmd(self.device.code["BATTERY"])
+                msg = "BATTERY" + ': ' + ret[3:]
+                func(msg)
+                self.battery_check_time = time.time()
+
+            time.sleep(0.1)
+
+
+    # [Device] - 디바이스 상태 확인() thread...
+    def start_devices(self, func):
+        self.check = True
+        t = Thread(target=self.thread_device, args=(func,))
+        t.daemon = True
+        t.start()
+        return True, None
+
+
+    # [Device] - 디바이스 상태 확인 종료
+    def stop_devices(self):
+        self.check = False
+        return True, None
 
 
     # [Motion] - 모터 1개 제어(위치/속도/가속도)
     def motor(self, n, position, speed=None, accel=None):
         if n < 0 or n > 9:
             return False, "Error > Channel value should be 0-9"
-        elif speed is not None and (speed < 0 or speed > 255):
+        if speed is not None and (speed < 0 or speed > 255):
             return False, "Error > Speed value should be 0-255"
-        elif accel is not None and (speed < 0 or speed > 255):
+        if accel is not None and (accel < 0 or accel > 255):
             return False, "Error > Acceleration value should be 0-255"
 
         self.motion.set_speed(n, speed)
@@ -227,8 +269,8 @@ class Edu_Pibo:
 
     # [Speech] - STT
     def stt(self, filename='stream.wav', lang='ko-KR', timeout=5):
-        self.speech.stt(filename, lang, timeout)
-        return True, None
+        ret = self.speech.stt(filename, lang, timeout)
+        return True, ret
 
 
     # [Speech] - 대화
@@ -244,12 +286,13 @@ class Edu_Pibo:
         while True:
             if self.onair == False:
                 vs.stop()
-                self.oled.clear()
                 break
             self.img = vs.read()
             img = self.img
             img = cv2.resize(img, (128,64))
-            self.oled.draw_streaming(img)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+            self.oled.nparray_to_PIL(img)
             self.oled.show()
 
 
@@ -281,6 +324,8 @@ class Edu_Pibo:
             self.camera.imwrite(filename, self.img)
         else:
             img = self.camera.read(w=128, h=64)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             self.camera.imwrite(filename, img)
             self.oled.draw_image(filename)
             self.oled.show()
@@ -319,12 +364,26 @@ class Edu_Pibo:
             return True, ret
 
 
+    def check_color(self, img):
+        hls = cv2.cvtColr(img, cv2.COLOR_BGR2HLS)
+        cnt = 1
+        sum_hue = 0
+
+        
     # [Vision] - 컬러 인식
-    # def search_color(self):
-    #     if self.onair:
-    #         img = self.camera_read()
-            # ret = self.detect.detect_color(img)
-            # return ret
+    def search_color(self):
+        if self.onair:
+            #detect_color
+            (h, w) = self.img.shape[:2]
+            img_hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HLS)
+            print("hsv", (h, w))
+            
+            # 평균 패치 측정
+        #     for i in range(50, w-50, 20):
+        #         for j in range(50, h-50, 20):
+        #             sum_
+        #     ret = self.detect.detect_color(self.img)
+        #     return True, ret
         # else:
         #     pass
 
