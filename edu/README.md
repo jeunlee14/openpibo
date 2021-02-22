@@ -104,7 +104,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 
 
-## 2. APIs 
+## 2. APIs
 
 ### 2.1 Audio
 
@@ -162,19 +162,37 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 ### 2.3 Device
 
-> 파이보 부품 상태를 확인합니다.
+> 파이보 디바이스 상태를 확인합니다.
 
 - `pibo.check_device(system)`
 
-  - 기능: 부품의 상태를 확인합니다.
+  - 기능: 디바이스의 상태를 확인합니다.
   - 매개변수
-    - system: 확인할 부품 (PIR, Touch, Button, Battery, DC - 영어 대소문자 모두 가능)
+    - system: 확인할 디바이스 (System, DC_CONN - 영어 대소문자 모두 가능)
   - 반환값
     - True(성공)/False(실패),  Device로부터 받은 응답
 
   ```python
   pibo.check_device("battery")
   ```
+  
+- `pibo.start_devices(func)`
+
+  - 기능: 디바이스의 상태를 확인합니다.
+  - 매개변수
+    - func: Device로부터 받은 응답을 출력하기 위한 함수
+  - 반환값
+    - True(성공)/False(실패), None
+
+  ```python
+  pibo.start_devices()
+  ```
+
+- `pibo.stop_devices()`
+
+  - 기능: 디바이스의 상태 확인을 종료합니다.
+  - 반환값
+    - True(성공)/False(실패), None
 
 ### 2.4 Motion
 
