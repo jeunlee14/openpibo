@@ -82,7 +82,7 @@ fi
 if [[ $MODEL == *"Pi 4"* ]];then
   PIMODEL_SELECT=2
 fi
-AUTO_LOAD=1
+AUTO_LOAD=0
 
 echo
 echo "Installing..."
