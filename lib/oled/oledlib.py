@@ -39,7 +39,7 @@ class cOled:
   def draw_image(self, filename):
     self.image = Image.open(filename).convert('1')
 
-  def draw_streaming(self, img):
+  def nparray_to_PIL(self, img):
     self.image = Image.fromarray(img).convert('1')
 
   def draw_rectangle(self, points, fill=None):
