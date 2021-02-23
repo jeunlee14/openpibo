@@ -1,4 +1,5 @@
 import os, sys, time, cv2
+import numpy as np
 
 from utils.config import Config as cfg
 sys.path.append(cfg.OPENPIBO_PATH + '/lib')
@@ -83,15 +84,14 @@ class Edu_Pibo:
         return True, None
 
 
-
     # [Device] - 디바이스 상태 확인
     def check_device(self, system):
         system = system.upper()
 
-        if system in  ("BATTERY"):
+        if system in  "BATTERY":
             ret = self.device.send_cmd(self.device.code[system])
             ans = system + ': ' + ret[3:]
-        else:
+        elif system in "SYSTEM":
             ret = self.device.send_cmd(self.device.code["SYSTEM"])
 
             sys = ""
@@ -100,14 +100,17 @@ class Edu_Pibo:
                 if i == "-":
                     result.append(sys)
                     sys = ""
+                    continue
                 sys += i
 
-            system_dict = {"PIR": "-", "TOUCH": "-", "DC_CONN": "-", "BUTTON": "-",}
+            system_dict = {"PIR": "", "TOUCH": "", "DC_CONN": "", "BUTTON": "",}
             system_dict["PIR"] = result[0]
             system_dict["TOUCH"] = result[1]
             system_dict["DC_CONN"] = result[2]
             system_dict["BUTTON"] = result[3]
             ans = system_dict
+        else:
+            return False, None
 
         return True, ans
 
@@ -136,7 +139,7 @@ class Edu_Pibo:
             time.sleep(0.1)
 
 
-    # [Device] - 디바이스 상태 확인() thread...
+    # [Device] - 디바이스 상태 확인(thread)
     def start_devices(self, func):
         self.check = True
         t = Thread(target=self.thread_device, args=(func,))
@@ -199,7 +202,7 @@ class Edu_Pibo:
     def set_motion(self, name, cycle):
         ret = self.motion.set_motion(name, cycle)
         if ret ==  False:
-            return ret, "Profile not exist " + name 
+            return ret, "Error > Profile not exist " + name 
         return ret, None
 
 
@@ -260,9 +263,6 @@ class Edu_Pibo:
 
     # [Speech] - TTS
     def tts(self, string, filename='tts.mp3', lang='ko'):
-        if '<speak>' and '</speak>' not in string:
-            return False, None
-
         self.speech.tts(string, filename, lang)
         return True, None
 
@@ -345,47 +345,61 @@ class Edu_Pibo:
     # [Vision] - QR/바코드 인식
     def search_qr(self):
         if self.onair:
-            ret = self.detect.detect_qr(self.img)
-            return True, ret
+            img = self.img
         else:
             img = self.camera.read()
-            ret = self.detect.detect_qr(img)
-            return True, ret
+        ret = self.detect.detect_qr(img)
+        return True, ret
 
 
     # [Vision] - 문자 인식
     def search_text(self):
         if self.onair:
-            ret = self.detect.detect_text(self.img)
-            return True, ret
+            img = self.img
         else:
             img = self.camera.read()
-            ret = self.detect.detect_text(img)
-            return True, ret
-
-
-    def check_color(self, img):
-        hls = cv2.cvtColr(img, cv2.COLOR_BGR2HLS)
-        cnt = 1
-        sum_hue = 0
+        ret = self.detect.detect_text(img)
+        return True, ret
 
         
     # [Vision] - 컬러 인식
     def search_color(self):
         if self.onair:
-            #detect_color
-            (h, w) = self.img.shape[:2]
-            img_hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HLS)
-            print("hsv", (h, w))
-            
-            # 평균 패치 측정
-        #     for i in range(50, w-50, 20):
-        #         for j in range(50, h-50, 20):
-        #             sum_
-        #     ret = self.detect.detect_color(self.img)
-        #     return True, ret
-        # else:
-        #     pass
+            img = self.img
+        else:
+            img = self.camera.read()
+
+        height, width = img.shape[:2]
+        img_hls = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
+        cnt = 0
+        sum_hue = 0
+        
+        # 평균 패치 측정(j: Height, i: width)
+        for i in range(50, width-50, 20):
+            for j in range(50, height-50, 20):
+                sum_hue += (img_hls[j, i, 0]*2)
+                cnt += 1
+        
+        hue = round(sum_hue/cnt)
+
+        if ( 0 <= hue <= 30) or (330 <=  hue <= 360):
+            return True, "Red"
+        elif (31 <=  hue <= 59):
+            return True, "Orange"
+        elif (60 <=  hue <= 85):
+            return True, "Yellow"
+        elif (8 <=  hue <= 159):
+            return True, "Green"
+        elif (160 <=  hue <= 209):
+            return True, "Skyblue"
+        elif (210 <=  hue <= 270):
+            return True, "Blue"
+        elif (271 <=  hue <= 290):
+            return True, "Purple"
+        elif ( 291<=  hue <= 329):
+            return True, "Magenta"
+        else:
+            return True, "Can't check color"
 
 
     # [Vision] - 얼굴 인식
@@ -410,7 +424,7 @@ class Edu_Pibo:
         name = "Guest" if ret == False else ret["name"]
         score = 0 if ret == False else ret["score"]
         result = self.camera.putText(img, "{}/ {} {}".format(name, gender, age), (x-10, y-10), size=0.5)
-        # self.camera.imwrite(filename, result)
+        self.camera.imwrite(filename, result)
 
         return True, {"name": name, "score": score, "gender": gender, "age": age}
 

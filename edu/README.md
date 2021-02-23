@@ -168,10 +168,11 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 디바이스의 상태를 확인합니다.
   - 매개변수
-    - system: 확인할 디바이스 (System, DC_CONN - 영어 대소문자 모두 가능)
+    - system: 확인할 디바이스 (System, Baterry - 영어 대소문자 모두 가능)
   - 반환값
-    - True(성공)/False(실패),  Device로부터 받은 응답
-
+    - True(성공), Device로부터 받은 응답
+  - False(실패), None
+  
   ```python
   pibo.check_device("battery")
   ```
@@ -271,7 +272,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - cycle: 모션 반복 횟수
   - 반환값
     - True(성공), None
-    - False(실패), "Profile not exist {name}"
+    - False(실패), Error code
   
   ```python
   pibo.set_motion("dance1", 5)
@@ -281,7 +282,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 > OLED Display에 문자, 이미지, 도형을 출력합니다.
 
-OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로 문자나 도형을 그립니다. 만약 좌측상단 좌표가 (10, 10), 우측하단 좌표가 (50, 50)라면 위치는 아래와 같습니다.
+OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로 문자나 도형을 그립니다. 
+
+만약 좌측상단 좌표가 (10, 10), 우측하단 좌표가 (50, 50)라면 위치는 아래와 같습니다.
 
 ![OLED_coordinate](README_Images/OLED_coordinate.png) 
 
@@ -501,17 +504,21 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
 - `pibo.search_color()`
 
-  - 기능: 이미지 안의 색상을 인식합니다.
+  - 기능: 이미지(단색 이미지) 안의 색상을 인식합니다. 
+
+    (Red, Orange, Yellow, Green, Skyblue, Blue, Purple, Magenta)
+
   - 반환값
+    
     - True(성공)/False(실패), 인식된 색상
 
 - `pibo.search_face(filename)`
 
-  - 기능: 이미지 안의 얼굴을 인식하여 정보를 제공합니다.
+  - 기능: 이미지 안의 얼굴을 인식하여 성별과 나이를 추측하고, facedb를 바탕으로 인식한 얼굴의 이름과 유사도를 제공합니다.
   - 매개변수
     - filename: 저장할 파일 이름 [default: 'face.png']
   - 반환값
-    - True(성공), {"name:"이름, "gender:"성별, "age:"나이}
+    - True(성공), {"name": name, "score": score, "gender": gender, "age": age}
     - False(실패), "No Face" 
 
   ```python
@@ -588,3 +595,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - name: 학습할 객체 이름
   - 반환값
     - ret: True(성공)/False(실패)
+  
+  ```python
+  
+  ```
