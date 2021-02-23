@@ -56,6 +56,9 @@ sudo vi /etc/modprobe.d/8192cu.conf
   sudo vi /etc/modules : 기본으로 적재되어 있어 불필요
   추가 bcm2835-v4l2
 
+ - Audio
+   sudo raspi-config > System > Audio > 3.5mm
+
  - SPI 켜기
   [CLI]기준: sudo raspi-config > Interfacing Options > SPI 예
   [GUI]기준: 시작 > 기본설정 > Raspberry Pi Configuration > Interfaces > SPI Enable 

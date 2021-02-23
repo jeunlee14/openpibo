@@ -291,7 +291,7 @@ class Edu_Pibo:
             img = self.img
             img = cv2.resize(img, (128,64))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+            _, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
             self.oled.nparray_to_PIL(img)
             self.oled.show()
 
