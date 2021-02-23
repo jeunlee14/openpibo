@@ -472,8 +472,3 @@ class Edu_Pibo:
     def delete_face(self, name):
         ret = self.face.delete_face(name)
         return ret, None
-        
-
-    # [Vision] - 객체 학습
-    # def train_myObject(self, name):
-    #    pass
