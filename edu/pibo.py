@@ -36,8 +36,8 @@ class Edu_Pibo:
 
 
     # [Audio] - mp3/wav 파일 재생
-    def play_audio(self, filename, out='local', volume='-2000'):
-        self.audio.play(filename, out, volume)
+    def play_audio(self, filename, out='local', volume='-2000', background=True):
+        self.audio.play(filename, out, volume, background)
         return True, None
 
 
