@@ -512,6 +512,17 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     
     - True(성공)/False(실패), 인식된 색상
 
+- `pibo.detect_face()`
+
+  - 기능: 이미지 안의 얼굴을 탐색하여 좌표를 제공합니다.
+  - 반환값
+    - True(성공), 좌표 배열 [[x,y,w,h], ...] 
+    - False(실패), "No Face" 
+
+  ```python
+  pibo.search_face("face.png")
+  ```
+
 - `pibo.search_face(filename)`
 
   - 기능: 이미지 안의 얼굴을 인식하여 성별과 나이를 추측하고, facedb를 바탕으로 인식한 얼굴의 이름과 유사도를 제공합니다.

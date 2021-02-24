@@ -402,6 +402,18 @@ class Edu_Pibo:
             return True, "Can't check color"
 
 
+    # [Vision] - 얼굴 탐색
+    def detect_face(self):
+        if self.onair:
+            img = self.img
+        else:
+            img = self.camera.read()
+        faceList = self.face.detect(img)
+        if len(faceList) < 1:
+            return False, "No Face"
+        return True, faceList
+
+
     # [Vision] - 얼굴 인식
     def search_face(self, filename="face.png"):
         if self.onair:
