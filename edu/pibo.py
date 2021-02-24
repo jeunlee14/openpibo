@@ -62,7 +62,7 @@ class Edu_Pibo:
             'pink': (255,51,153),
         }   
         
-        # 양쪽 눈 제어(RGB)
+         # 양쪽 눈 제어(RGB)
         if len(color) == 3:
             self.device.send_raw(f"#20:{color}!")
         # 양쪽 눈 개별 제어(RGB)
@@ -70,10 +70,14 @@ class Edu_Pibo:
             self.device.send_raw(f"#23:{color}!")
         # 양쪽 눈 제어(string)
         elif len(color) == 1:
-            color = color_list[color[-1].lower()]
-            self.device.send_raw(f"#20:{color}!")
+            color = color[-1].lower()
+            if color not in color_list.keys():
+                return False, "목록에 없는 색상입니다."
+            else:
+                color = color_list[color]
+                self.device.send_raw(f"#20:{color}!")
         else:
-            return False, None
+            return False, "잘못된 형식입니다."
 
         return True, None
 
@@ -325,6 +329,7 @@ class Edu_Pibo:
         else:
             img = self.camera.read()
             self.camera.imwrite(filename, img)
+            img = cv2.resize(img, (128,64))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             #_, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
             self.oled.nparray_to_PIL(img)
@@ -388,7 +393,7 @@ class Edu_Pibo:
             return True, "Orange"
         elif (60 <=  hue <= 85):
             return True, "Yellow"
-        elif (8 <=  hue <= 159):
+        elif (86 <=  hue <= 159):
             return True, "Green"
         elif (160 <=  hue <= 209):
             return True, "Skyblue"
@@ -396,7 +401,7 @@ class Edu_Pibo:
             return True, "Blue"
         elif (271 <=  hue <= 290):
             return True, "Purple"
-        elif ( 291<=  hue <= 329):
+        elif (291<=  hue <= 329):
             return True, "Magenta"
         else:
             return True, "Can't check color"

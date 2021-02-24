@@ -152,7 +152,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   ```
 
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
+    - False(실패), Error code
 
 - `pibo.eye_off()`
 
