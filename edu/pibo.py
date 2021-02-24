@@ -64,10 +64,10 @@ class Edu_Pibo:
         
          # 양쪽 눈 제어(RGB)
         if len(color) == 3:
-            self.device.send_raw(f"#20:{color}!")
+            self.device.send_raw("#20:{}!".format(",".join(str(p) for p in color)))
         # 양쪽 눈 개별 제어(RGB)
         elif len(color) == 6:
-            self.device.send_raw(f"#23:{color}!")
+            self.device.send_raw("#23:{}!".format(",".join(str(p) for p in color)))
         # 양쪽 눈 제어(string)
         elif len(color) == 1:
             color = color[-1].lower()
