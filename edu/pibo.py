@@ -291,7 +291,7 @@ class Edu_Pibo:
             img = self.img
             img = cv2.resize(img, (128,64))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            _, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+            #_, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
             self.oled.nparray_to_PIL(img)
             self.oled.show()
 
@@ -323,11 +323,11 @@ class Edu_Pibo:
         if self.onair:
             self.camera.imwrite(filename, self.img)
         else:
-            img = self.camera.read(w=128, h=64)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+            img = self.camera.read()
             self.camera.imwrite(filename, img)
-            self.oled.draw_image(filename)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            #_, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+            self.oled.nparray_to_PIL(img)
             self.oled.show()
         return True, None
 
