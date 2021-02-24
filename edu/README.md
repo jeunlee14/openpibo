@@ -212,7 +212,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - False(실패), Error code
 
   ```python
-  pibo.motor(1, 30, 100, 15)
+  pibo.motor(2, 30, 100, 10)
   ```
 
 - `pibo.motors(positions, speed, accel)`
@@ -226,7 +226,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - True(성공)/False(실패), None
 
   ```python
-  pibo.motors(positions=[-10,-20,40,0,-10,50,20,20,40,70], speed=[0,0,7,0,80,50, 10,10,20,70], accel=[0,0,30,20,30,0,0,0,30,20])
+  pibo.motors(positions=[0,0,0,10,0,10,0,0,0,20], speed=[0,0,0,15,0,10,0,0,0,10], accel=[0,0,10,5,0,0,0,0,5,10])
   ```
 
 - `pibo.motors_movetime(positions, movetime)`
