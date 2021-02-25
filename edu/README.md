@@ -104,7 +104,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 
 
-## 2. APIs
+## 2. 교육용 APIs
 
 ### 2.1 Audio
 
@@ -118,7 +118,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - out: 출력대상(local-3.5mm잭 / hdmi / both) [default: local]
     - volume: 음량 크기 (단위: mdB=1/1000dB) [default: -2000]
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.play(filename=cfg.TESTDATA_PATH+"/test.mp3", out='local', volume=-2000)
@@ -128,7 +129,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 오디오 재생을 정지합니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
 ### 2.2 Neopixel
 
@@ -159,7 +160,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: LED를 끕니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
 ### 2.3 Device
 
@@ -172,29 +173,33 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - system: 확인할 디바이스 (System, Baterry - 영어 대소문자 모두 가능)
   - 반환값
     - True(성공), Device로부터 받은 응답
-  - False(실패), None
-  
+    - False(실패), Error code
+
   ```python
   pibo.check_device("battery")
   ```
-  
+
 - `pibo.start_devices(func)`
 
   - 기능: 디바이스의 상태를 확인합니다.
   - 매개변수
     - func: Device로부터 받은 응답을 출력하기 위한 함수
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
   ```python
-  pibo.start_devices()
+  def msg_device(msg):
+      print(msg)
+  
+  def check_devices():
+  	pibo.start_devices(msg_device)
   ```
 
 - `pibo.stop_devices()`
 
   - 기능: 디바이스의 상태 확인을 종료합니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
 ### 2.4 Motion
 
@@ -224,7 +229,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - speed: 모터 속도(0~255) 배열( [...] ) [default: None]
     - accel: 모터 가속도(0~255) 배열( [...] ) [default: None]
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.motors(positions=[0,0,0,10,0,10,0,0,0,20], speed=[0,0,0,15,0,10,0,0,0,10], accel=[0,0,10,5,0,0,0,0,5,10])
@@ -237,7 +243,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - positions: 0~9번 모터 각도 배열( [...] )
     - movetime: 모터 이동 시간(ms) - 모터가 정해진 위치까지 이동하는 시간 [default: None]
   - 반환값
-    -  True(성공)/False(실패), None
+    -  True(성공), None
+    -  False(실패), Error code
 
   ```python
   pibo.motors_movetime(positions=[0,0,30,20, 30,0, 0,0,30,20], movetime=1000)
@@ -252,25 +259,24 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - name: 모션 이름 [default: None]
   - 반환값
     - True(성공), 모션 종류(name==None)/해당 모션 상세 정보 조회(name!=None)
-    - False(실패), None
-
-  ```python
+  
+```python
   # 모션 목록 조회
   pibo.get_motion()
   # cheer3 상세 정보 조회
   pibo.get_motion("cheer3")
   ```
-
-  > [전체 모션 리스트]
+  
+> [전체 모션 리스트]
   >
   > stop(2), sleep, lookup, left(2), right(2), forward(2), backward(2),  step(2), hifive, cheer(3), wave(6), think(4), wake_up(3), hey(2),  yes/no, breath(4), head, spin, clapping(2), hankshaking, bow, greeting,  hand(4), foot(2),  speak(9),  welcome, 감정(10), handup(2), look(2),  dance(5), test(5) -  괄호 안은 개수를 의미
-
+  
 - `pibo.set_motion(name, cycle)`
 
   - 기능: 모션의 동작을 실행합니다.
   - 매개변수
     - name: 모션 이름
-    - cycle: 모션 반복 횟수
+    - cycle: 모션 반복 횟수 [default: 1]
   - 반환값
     - True(성공), None
     - False(실패), Error code
@@ -297,7 +303,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - text: 문자열 내용
     - size: 폰트 크기 [default: 10]
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.draw_text((10, 10), '안녕하세요.', 15)
@@ -311,7 +318,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - filename: 그림 파일의 경로
   - 반환값
     - True(성공), None
-    - False(실패), "128X64 파일만 가능합니다."
+    - False(실패), Error code
 
   ```python
   pibo.draw_image(cfg.TESTDATA_PATH +"/clear.png")
@@ -325,7 +332,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - shape: 도형 종류 - rectangle(사각형, 네모) / circle(원, 동그라미, 타원) / line(선, 직선)
     - fill: True(채움), False(채우지 않음) [default: False]
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.draw_figure((10,10,30,30), "rectangle", True)
@@ -337,19 +345,19 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 기능: 이미지를 반전시킵니다. (색 반전)
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
 - `pibo.show_display()`
 
   - 기능: 화면에 표시합니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
 - `pibo.clear_display()`  
 
   - 기능: 화면을 지웁니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
 ### 2.7 Speech
 
@@ -362,7 +370,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - string: 번역할 문장
     - to: 번역할 언어(한글-ko / 영어-en) [default: ko]
   - 반환값
-    - True(성공)/False(실패), 번역된 문장
+    - True(성공), 번역된 문장
 
   ```python
   pibo.translate('즐거운 금요일', 'en')
@@ -414,7 +422,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     
   - 반환값
 
-    - True(성공)/False(실패), None
+    - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3", "ko")
@@ -428,7 +437,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - lang: 한글(ko) / 영어(en) [default: ko]
     - timeout: 녹음할 시간(초) [default: 5초]
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
   ```python
   pibo.stt()
@@ -440,7 +449,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - q: 질문
   - 반환값
-    - True(성공)/False(실패), 질문에 대한 응답
+    - True(성공), 질문에 대한 응답
 
   ```python
   pibo.conversation('주말에 뭐하지?')
@@ -455,7 +464,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   
   - 기능: 카메라가 촬영하는 영상을 OLED에 보여줍니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
   
 - `pibo.stop_camera()`
 
@@ -473,7 +482,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
       (jpg, png 등 이미지 파일 형식 기입 필수)
   - 반환값
     
-    - True(성공)/False(실패), None
+    - True(성공), None
 
   ```python
   pibo.capture('test.png')
@@ -489,19 +498,19 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 반환값
 
-    - True(성공)/False(실패), {"name": 이름, "score": 점수, "position": 사물좌표(startX, startY, endX, endY)}
+    - True(성공), {"name": 이름, "score": 점수, "position": 사물좌표(startX, startY, endX, endY)}
 
 - `pibo.search_qr()`
 
   - 기능: 이미지 안의 QR 코드 및 바코드를 인식합니다.
   - 반환값
-    - True(성공)/False(실패), {"data": 내용, "type": 바코드/QR코드}
+    - True(성공), {"data": 내용, "type": 바코드/QR코드}
 
 - `pibo.search_text()` 
 
   - 기능: 이미지 안의 문자를 인식합니다.
   - 반환값
-    - True(성공)/False(실패), 인식된 문자열
+    - True(성공), 인식된 문자열
 
 - `pibo.search_color()`
 
@@ -511,26 +520,23 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 반환값
     
-    - True(성공)/False(실패), 인식된 색상
+    - True(성공), 인식된 색상
+    - False(실패), Error code
 
 - `pibo.detect_face()`
 
-  - 기능: 이미지 안의 얼굴을 탐색하여 좌표를 제공합니다.
+  - 기능: 이미지 안의 얼굴을 탐색합니다.
   - 반환값
-    - True(성공), 좌표 배열 [[x,y,w,h], ...] 
-    - False(실패), "No Face" 
-
-  ```python
-  pibo.search_face("face.png")
-  ```
+    - True(성공), 인식된 얼굴의 배열
+    - False(실패), "No Face"
 
 - `pibo.search_face(filename)`
 
-  - 기능: 이미지 안의 얼굴을 인식하여 성별과 나이를 추측하고, facedb를 바탕으로 인식한 얼굴의 이름과 유사도를 제공합니다.
+  - 기능: 이미지 안의 얼굴을 인식하여 성별과 나이를 추측하고, facedb를 바탕으로 인식한 얼굴의 이름과 정확도를 제공합니다.
   - 매개변수
     - filename: 저장할 파일 이름 [default: 'face.png']
   - 반환값
-    - True(성공), {"name": name, "score": score, "gender": gender, "age": age}
+    - True(성공), {"name": 이름, "score": 정확도, "gender": 성별, "age": 나이} (정확도 0.4 이하 동일인 판정)
     - False(실패), "No Face" 
 
   ```python
@@ -555,13 +561,12 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 기능: 사용 중인 facedb를 확인합니다.
   - 반환값
     - True(성공), 현재 로드된 facedb
-    - False(실패), None
-
+  
 - `pibo.init_facedb()`
 
   - 기능: facedb를 초기화합니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
 - `pibo.save_facedb(filname)`
 
@@ -569,7 +574,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - filename: 저장할 데이터베이스 파일 이름
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
   
   ```python
   pibo.save_facedb("./facedb")
@@ -581,7 +586,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - filename: 불러올 facedb 파일 이름
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
 
   ```python
   pibo.load_facedb("facedb")
@@ -594,7 +599,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - name: 삭제할 얼굴 이름
   - 반환값
-    - ret: True(성공)/False(실패), None
+    - ret: True(성공), None
 
   ```python
   pibo.train_face("kim")

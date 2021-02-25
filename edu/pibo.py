@@ -37,6 +37,8 @@ class Edu_Pibo:
 
     # [Audio] - mp3/wav 파일 재생
     def play_audio(self, filename, out='local', volume='-2000', background=True):
+        if out not in ("local", "hdmi", "both"):
+            return False, "Error > Output device must be 'local', 'hdmi', 'both'"
         self.audio.play(filename, out, volume, background)
         return True, None
 
@@ -60,25 +62,29 @@ class Edu_Pibo:
             'aqua': (0,255,255),
             'purple': (255,0,255),    
             'pink': (255,51,153),
-        }   
-        
-         # 양쪽 눈 제어(RGB)
-        if len(color) == 3:
-            self.device.send_raw(f"#20:{color}!")
-        # 양쪽 눈 개별 제어(RGB)
-        elif len(color) == 6:
-            self.device.send_raw(f"#23:{color}!")
-        # 양쪽 눈 제어(string)
-        elif len(color) == 1:
+        }
+  
+        if len(color) == 0:
+            return False, "Error > RGB or Color is required"
+
+        if str(color[-1]).isdigit():
+            for i in color:
+                if i < 0 or i > 255:
+                    return False, "Error > RGB value should be 0~255"
+                else:
+                    if len(color) == 3:
+                        self.device.send_raw("#20:{}!".format(",".join(str(p) for p in color)))
+                    elif len(color) == 6:
+                        self.device.send_raw("#23:{}!".format(",".join(str(p) for p in color)))
+                    else:
+                        return False, "Error > Invalid format"
+        else:
             color = color[-1].lower()
             if color not in color_list.keys():
-                return False, "목록에 없는 색상입니다."
+                return False, "Error > The color does not exist"
             else:
                 color = color_list[color]
-                self.device.send_raw(f"#20:{color}!")
-        else:
-            return False, "잘못된 형식입니다."
-
+                self.device.send_raw("#20:{}!".format(",".join(str(p) for p in color)))
         return True, None
 
 
@@ -92,10 +98,10 @@ class Edu_Pibo:
     def check_device(self, system):
         system = system.upper()
 
-        if system in  "BATTERY":
+        if system == "BATTERY":
             ret = self.device.send_cmd(self.device.code[system])
             ans = system + ': ' + ret[3:]
-        elif system in "SYSTEM":
+        elif system == "SYSTEM":
             ret = self.device.send_cmd(self.device.code["SYSTEM"])
 
             sys = ""
@@ -114,7 +120,7 @@ class Edu_Pibo:
             system_dict["BUTTON"] = result[3]
             ans = system_dict
         else:
-            return False, None
+            return False, "Error > System must be 'battery', 'system'"
 
         return True, ans
 
@@ -161,11 +167,13 @@ class Edu_Pibo:
     # [Motion] - 모터 1개 제어(위치/속도/가속도)
     def motor(self, n, position, speed=None, accel=None):
         if n < 0 or n > 9:
-            return False, "Error > Channel value should be 0-9"
+            return False, "Error > Channel value should be 0~9"
+        if position > 80 or position < -80:
+            return False, "Error > Position value should be -80~80"
         if speed is not None and (speed < 0 or speed > 255):
-            return False, "Error > Speed value should be 0-255"
+            return False, "Error > Speed value should be 0~255"
         if accel is not None and (accel < 0 or accel > 255):
-            return False, "Error > Acceleration value should be 0-255"
+            return False, "Error > Acceleration value should be 0~255"
 
         self.motion.set_speed(n, speed)
         self.motion.set_acceleration(n, accel)
@@ -176,14 +184,25 @@ class Edu_Pibo:
 
     # [Motion] - 모든 모터 제어(위치/속도/가속도)
     def motors(self, positions, speed=None, accel=None):
+        if len(positions) != 10:
+            return False, "Error > 10 positions are required"
+        if speed is not None and len(speed) != 10:
+            return False, "Error > 10 speeds are required"
+        if accel is not None and len(accel) != 10:
+            return False, "Error > 10 accelerations are require"
+
         mpos = [positions[i]*10 for i in range(len(positions))]
 
-        if speed == None and accel == None:
+        if speed is None and accel is None:
             os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
-        if speed:
+        elif speed is not None and accel is None:
             os.system("servo speed all {}".format(" ".join(map(str, speed))))
             os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
-        if accel:
+        elif accel is not None and speed is None:
+            os.system("servo accelerate all {}".format(" ".join(map(str, accel))))
+            os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
+        elif speed is not None and accel is not None:
+            os.system("servo speed all {}".format(" ".join(map(str, speed))))
             os.system("servo accelerate all {}".format(" ".join(map(str, accel))))
             os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
 
@@ -192,6 +211,8 @@ class Edu_Pibo:
 
     # [Motion] - 모든 모터 제어(movetime)
     def motors_movetime(self, positions, movetime=None):
+        if len(positions) != 10:
+            return False, "Error > 10 positions are required"
         self.motion.set_motors(positions, movetime)
         return True, None
 
@@ -203,15 +224,21 @@ class Edu_Pibo:
 
 
     # [Motion] - 모션 수행
-    def set_motion(self, name, cycle):
+    def set_motion(self, name, cycle=1):
         ret = self.motion.set_motion(name, cycle)
         if ret ==  False:
-            return ret, "Error > Profile not exist " + name 
+            return ret, "Error > " + name + " not exist in the profile" 
         return ret, None
 
 
     # [OLED] - 문자
     def draw_text(self, points, text, size=None):
+        if type(points) != tuple:
+            return False, "Error > Invalid format"
+        else:
+            if len(points) != 2:
+                return False, "Error > 2 points are required"
+
         self.oled.set_font(size=size)
         self.oled.draw_text(points, text)
         return True, None
@@ -221,23 +248,27 @@ class Edu_Pibo:
     def draw_image(self, filename):
         size_check = cv2.imread(filename).shape
         if size_check[0] != 64 or size_check[1] != 128:
-            return False, "128X64 파일만 가능합니다."
-
+            return False, "Error > Only 128X64 files are possible"
         self.oled.draw_image(filename)
         return True, None 
 
 
     # [OLED] - 도형
     def draw_figure(self, points, shape, fill=None):
-        if shape in ('rectangle', '네모', '사각형'):
+        if type(points) != tuple:
+            return False, "Error > Invalid format"
+        else:
+            if len(points) != 4:
+                return False, "Error > 4 points are required"
+
+        if shape == 'rectangle' or shape == '사각형' or shape == '네모':
             self.oled.draw_rectangle(points, fill)
-        elif shape in ('circle', '원', '동그라미','타원'):
+        elif shape == 'circle' or shape == '원' or shape == '동그라미' or shape == '타원':
             self.oled.draw_ellipse(points, fill)
-        elif shape in ('line', '선', '직선'):
+        elif shape == 'line' or shape == '선' or shape == '직선':
             self.oled.draw_line(points)
         else:
-            self.draw_text((8,20), '다시 입력해주세요', 15)
-            return False, None
+            return False, "Error > Invalid format"
         return True, None
 
 
@@ -267,6 +298,8 @@ class Edu_Pibo:
 
     # [Speech] - TTS
     def tts(self, string, filename='tts.mp3', lang='ko'):
+        if '<speak>' not in string or '</speak>' not in string:
+            return False, "Error > Invlid format"
         self.speech.tts(string, filename, lang)
         return True, None
 
@@ -404,7 +437,7 @@ class Edu_Pibo:
         elif (291<=  hue <= 329):
             return True, "Magenta"
         else:
-            return True, "Can't check color"
+            return False, "Error > Can't check color"
 
 
     # [Vision] - 얼굴 탐색
@@ -439,7 +472,7 @@ class Edu_Pibo:
 
         ret = self.face.recognize(img, faceList[0])
         name = "Guest" if ret == False else ret["name"]
-        score = 0 if ret == False else ret["score"]
+        score = "-" if ret == False else ret["score"]
         result = self.camera.putText(img, "{}/ {} {}".format(name, gender, age), (x-10, y-10), size=0.5)
         self.camera.imwrite(filename, result)
 
