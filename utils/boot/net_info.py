@@ -21,9 +21,9 @@ def disp(args):
   ssid = v[5] if v[3] == "" else v[3]
 
   o.draw_text((0,0), "# NETWORK")
-  o.draw_text((0,15), "[EIP]:{}".format(eip))
-  o.draw_text((0,30), "[WIP]:{}".format(wip))
-  o.draw_text((0,45), "[SSID]:{}".format(ssid))
+  o.draw_text((0,15), "[E]:{}".format(eip))
+  o.draw_text((0,30), "[W]:{}".format(wip))
+  o.draw_text((0,45), "[S]:{}".format(ssid))
 
   o.show()
 
