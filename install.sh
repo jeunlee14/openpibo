@@ -3,7 +3,7 @@ wget https://archive.raspberrypi.org/debian/pool/main/r/raspberrypi-firmware/ras
 dpkg -i raspberrypi-kernel-headers_1.20201126-1_armhf.deb
 rm -f raspberrypi-kernel-headers_1.20201126-1_armhf.deb
 
-sudo rfkill unblock wiki sudo rfkill unblock all
+#sudo rfkill unblock wiki sudo rfkill unblock all
 
 apt update
 apt install fonts-unfonts-core -y
