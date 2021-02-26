@@ -73,7 +73,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 코드는 아래와 같이 구성할 수 있습니다.
 
-![파일구성](README_Images/파일구성.png)
+![파일구성](README_Images/example.png)
 
 1. 라이브러리 호출 및 경로 설정
    - 코드 작성에 필요한 라이브러리를 호출하고 경로를 설정합니다.
