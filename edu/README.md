@@ -130,6 +130,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 기능: 오디오 재생을 정지합니다.
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
 ### 2.2 Neopixel
 
@@ -161,6 +162,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 기능: LED를 끕니다.
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
 ### 2.3 Device
 
@@ -168,7 +170,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 - `pibo.check_device(system)`
 
-  - 기능: 디바이스의 상태를 확인합니다.
+  - 기능: 디바이스의 상태를 확인합니다. (일회성)
   - 매개변수
     - system: 확인할 디바이스 (System, Baterry - 영어 대소문자 모두 가능)
   - 반환값
@@ -183,9 +185,10 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 디바이스의 상태를 확인합니다.
   - 매개변수
-    - func: Device로부터 받은 응답을 출력하기 위한 함수
+    - func: Device로부터 받은 응답을 확인하기 위한 함수
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
   ```python
   def msg_device(msg):
@@ -200,6 +203,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 기능: 디바이스의 상태 확인을 종료합니다.
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
 ### 2.4 Motion
 
@@ -223,11 +227,11 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 - `pibo.motors(positions, speed, accel)`
 
-  - 기능: 여러 개의 모터를 개별 제어합니다.
+  - 기능: 10개의 모터를 개별 제어합니다.
   - 매개변수
-    - position: 모터 각도(-80~80) 배열( [...] )
-    - speed: 모터 속도(0~255) 배열( [...] ) [default: None]
-    - accel: 모터 가속도(0~255) 배열( [...] ) [default: None]
+    - position: 0~9번 모터 각도(-80~80) 배열( [...] )
+    - speed: 0~9번 모터 속도(0~255) 배열( [...] ) [default: None]
+    - accel: 0~9번 모터 가속도(0~255) 배열( [...] ) [default: None]
   - 반환값
     - True(성공), None
     - False(실패), Error code
@@ -240,7 +244,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 입력한 시간 내에 모든 모터를 특정 위치로 이동합니다.
   - 매개변수
-    - positions: 0~9번 모터 각도 배열( [...] )
+    - positions: 0~9번 모터 각도(-80~80) 배열( [...] )
     - movetime: 모터 이동 시간(ms) - 모터가 정해진 위치까지 이동하는 시간 [default: None]
   - 반환값
     -  True(성공), None
@@ -258,19 +262,20 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
     - name: 모션 이름 [default: None]
   - 반환값
-    - True(성공), 모션 종류(name==None)/해당 모션 상세 정보 조회(name!=None)
+    - True(성공), 모션 종류(name==None) 또는 해당 모션 상세 정보 조회(name!=None)
+    - False(실패), Error code
   
 ```python
   # 모션 목록 조회
   pibo.get_motion()
   # cheer3 상세 정보 조회
   pibo.get_motion("cheer3")
-  ```
-  
+```
+
 > [전체 모션 리스트]
   >
   > stop(2), sleep, lookup, left(2), right(2), forward(2), backward(2),  step(2), hifive, cheer(3), wave(6), think(4), wake_up(3), hey(2),  yes/no, breath(4), head, spin, clapping(2), hankshaking, bow, greeting,  hand(4), foot(2),  speak(9),  welcome, 감정(10), handup(2), look(2),  dance(5), test(5) -  괄호 안은 개수를 의미
-  
+
 - `pibo.set_motion(name, cycle)`
 
   - 기능: 모션의 동작을 실행합니다.
@@ -346,18 +351,21 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 기능: 이미지를 반전시킵니다. (색 반전)
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
 - `pibo.show_display()`
 
   - 기능: 화면에 표시합니다.
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
 - `pibo.clear_display()`  
 
   - 기능: 화면을 지웁니다.
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
 ### 2.7 Speech
 
@@ -371,6 +379,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - to: 번역할 언어(한글-ko / 영어-en) [default: ko]
   - 반환값
     - True(성공), 번역된 문장
+    - False(실패), Error code
 
   ```python
   pibo.translate('즐거운 금요일', 'en')
@@ -385,9 +394,9 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
       - speak
 
-        - 기본적으로 모든 음성은 태그로 감싸져야 한다.
-        - 태그 하위로 `,`를 제외한 모든 태그가 존재할 수 있다.
-        - 문장, 문단 단위로 적용하는 것을 원칙으로 한다. 한 문장 안에서 단어별로 태그를 감싸지 않는다.
+        - 기본적으로 모든 음성은 태그로 감싸져야 합니다.
+        - 태그 하위로 `,`를 제외한 모든 태그가 존재할 수 있습니다.
+        - 문장, 문단 단위로 적용하는 것을 원칙으로 합니다. 한 문장 안에서 단어별로 태그를 감싸지 않습니다.
 
         ```
         <speak> 안녕하세요. 반가워요. </speak>
@@ -395,7 +404,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
         
       - voice
       
-        - 음성의 목소리를 변경하기 위해 사용하며, name attribute를 통해 원하는 목소리를 지정한다. 제공되는 목소리는 4가지이다.
+        - 음성의 목소리를 변경하기 위해 사용하며, name attribute를 통해 원하는 목소리를 지정합니다. 제공되는 목소리는 4가지입니다.
       
         ```
         - WOMAN_READ_CALM: 여성 차분한 낭독체 (default)
@@ -404,8 +413,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
         - MAN_DIALOG_BRIGHT: 남성 밝은 대화체
         ```
       
-        - 하위로 `,`를 제외한 모든 태그(kakao: effet, prosody, break, audio, say-as, sub)가 존재할 수 있다.
-        - 문장, 문단 단위로 적용하는 것을 원칙으로 한다. 한 문장 안에서 단어별로 태그를 감싸지 않는다.
+        - 하위로 `,`를 제외한 모든 태그(kakao: effet, prosody, break, audio, say-as, sub)가 존재할 수 있습니다.
+        - 문장, 문단 단위로 적용하는 것을 원칙으로 합니다. 한 문장 안에서 단어별로 태그를 감싸지 않습니다.
       
         ```
         <speak>
@@ -429,15 +438,16 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3", "ko")
   ```
 
-- `pibo.stt()`
+- `pibo.stt(filename, lang, timeout)`
 
   - 기능: Speech(음성)를 Text(문자)로 변환합니다.
   - 매개변수
     - filename: 저장할 파일 이름 [default: stream.wav]
-    - lang: 한글(ko) / 영어(en) [default: ko]
+    - lang: 한글(ko-KR) / 영어(en-US) [default: ko-KR]
     - timeout: 녹음할 시간(초) [default: 5초]
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.stt()
@@ -450,7 +460,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - q: 질문
   - 반환값
     - True(성공), 질문에 대한 응답
-
+  - False(실패), Error code
+  
   ```python
   pibo.conversation('주말에 뭐하지?')
   ```
@@ -465,12 +476,14 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 기능: 카메라가 촬영하는 영상을 OLED에 보여줍니다.
   - 반환값
     - True(성공), None
+    - False(실패), Error code
   
 - `pibo.stop_camera()`
 
   - 기능: 카메라를 종료합니다.
   - 반환값
-    - True(성공)/False(실패), None
+    - True(성공), None
+    - False(실패), Error code
 
 - `pibo.capture(filename)` 
 
@@ -483,6 +496,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 반환값
     
     - True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.capture('test.png')
@@ -499,18 +513,21 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 반환값
 
     - True(성공), {"name": 이름, "score": 점수, "position": 사물좌표(startX, startY, endX, endY)}
+    - False(실패), Error code
 
 - `pibo.search_qr()`
 
   - 기능: 이미지 안의 QR 코드 및 바코드를 인식합니다.
   - 반환값
     - True(성공), {"data": 내용, "type": 바코드/QR코드}
+    - False(실패), Error code
 
 - `pibo.search_text()` 
 
   - 기능: 이미지 안의 문자를 인식합니다.
   - 반환값
     - True(성공), 인식된 문자열
+    - False(실패), Error code
 
 - `pibo.search_color()`
 
@@ -528,16 +545,19 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 기능: 이미지 안의 얼굴을 탐색합니다.
   - 반환값
     - True(성공), 인식된 얼굴의 배열
-    - False(실패), "No Face"
+    - False(실패), Error code
 
 - `pibo.search_face(filename)`
 
   - 기능: 이미지 안의 얼굴을 인식하여 성별과 나이를 추측하고, facedb를 바탕으로 인식한 얼굴의 이름과 정확도를 제공합니다.
   - 매개변수
+    
     - filename: 저장할 파일 이름 [default: 'face.png']
+    
+      (jpg, png 등 이미지 파일 형식 기입 필수)
   - 반환값
     - True(성공), {"name": 이름, "score": 정확도, "gender": 성별, "age": 나이} (정확도 0.4 이하 동일인 판정)
-    - False(실패), "No Face" 
+    - False(실패), Error code 
 
   ```python
   pibo.search_face("face.png")
@@ -550,7 +570,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - name: 학습할 얼굴의 이름
   - 반환값
     - True(성공),  None
-    - False(실패), "No Face" 
+    - False(실패), Error code 
 
   ```python
   pibo.train_face("kim")
@@ -561,12 +581,14 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 기능: 사용 중인 facedb를 확인합니다.
   - 반환값
     - True(성공), 현재 로드된 facedb
+    - False(실패), Error code
   
 - `pibo.init_facedb()`
 
   - 기능: facedb를 초기화합니다.
   - 반환값
     - True(성공), None
+    - False(실패), Error code
 
 - `pibo.save_facedb(filname)`
 
@@ -575,7 +597,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - filename: 저장할 데이터베이스 파일 이름
   - 반환값
     - True(성공), None
-  
+    - False(실패), Error code
+
   ```python
   pibo.save_facedb("./facedb")
   ```
@@ -587,7 +610,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - filename: 불러올 facedb 파일 이름
   - 반환값
     - True(성공), None
-
+  - False(실패), Error code
+  
   ```python
   pibo.load_facedb("facedb")
   ```
@@ -600,20 +624,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - name: 삭제할 얼굴 이름
   - 반환값
     - ret: True(성공), None
+    - False(실패), Error code
 
   ```python
   pibo.train_face("kim")
   ```
-
-- `pibo.train_myObject(name)`  
-
-  - 기능: 객체를 학습합니다.
-  - 매개변수
-    - name: 학습할 객체 이름
-  - 반환값
-    - ret: True(성공)/False(실패)
-  
-  ```python
-  
-  ```
-  
