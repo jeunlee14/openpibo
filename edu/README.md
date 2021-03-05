@@ -231,9 +231,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 10개의 모터를 개별 제어합니다.
   - 매개변수
-    - position: 0~9번 모터 각도 (-80~80) 배열( [...] )
-    - speed: 0~9번 모터 속도 (0~255) 배열( [...] ) [default: None]
-    - accel: 0~9번 모터 가속도 (0~255) 배열( [...] ) [default: None]
+    - position: 0-9번 모터 각도 (-80~80) 배열( [...] )
+    - speed: 0-9번 모터 속도 (0~255) 배열( [...] ) [default: None]
+    - accel: 0-9번 모터 가속도 (0~255) 배열( [...] ) [default: None]
   - 반환값
     - True(성공), None
     - False(실패), Error code
@@ -246,7 +246,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 입력한 시간 내에 모든 모터를 특정 위치로 이동합니다.
   - 매개변수
-    - positions: 0~9번 모터 각도 (-80~80) 배열( [...] )
+    - positions: 0-9번 모터 각도 (-80~80) 배열( [...] )
     - movetime: 모터 이동 시간(ms) - 모터가 정해진 위치까지 이동하는 시간 [default: None]
       - movetime이 있으면 해당 시간까지 모터를 이동시키기 위한 속도, 가속도 값을 계산하여 모터를 제어하고, movetime이 없으면 이전에 설정한 속도, 가속도 값에 의해 모터를 이동시킵니다.
   - 반환값
