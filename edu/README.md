@@ -208,15 +208,17 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 ### 2.4 Motion
 
 > 파이보의 움직임을 제어합니다.
+>
+> speed와 accel이 None이면 이전에 설정한 값으로 제어합니다.
 
 - `pibo.motor(n, position, speed, accel)`
 
   - 기능: 모터 1개를 제어합니다.
   - 매개변수
-    - n: 모터 번호(0~9)
-    - position: 모터 각도(-80~80)
-    - speed: 모터 속도(0~255) [default: None]
-    - accel: 모터 가속도(0~255) [default: None]
+    - n: 모터 번호 (0~9)
+    - position: 모터 각도 (-80~80)
+    - speed: 모터 속도 (0~255) [default: None]
+    - accel: 모터 가속도 (0~255) [default: None]
   - 반환값
     - True(성공), None
     - False(실패), Error code
@@ -229,9 +231,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 10개의 모터를 개별 제어합니다.
   - 매개변수
-    - position: 0~9번 모터 각도(-80~80) 배열( [...] )
-    - speed: 0~9번 모터 속도(0~255) 배열( [...] ) [default: None]
-    - accel: 0~9번 모터 가속도(0~255) 배열( [...] ) [default: None]
+    - position: 0~9번 모터 각도 (-80~80) 배열( [...] )
+    - speed: 0~9번 모터 속도 (0~255) 배열( [...] ) [default: None]
+    - accel: 0~9번 모터 가속도 (0~255) 배열( [...] ) [default: None]
   - 반환값
     - True(성공), None
     - False(실패), Error code
@@ -244,8 +246,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 입력한 시간 내에 모든 모터를 특정 위치로 이동합니다.
   - 매개변수
-    - positions: 0~9번 모터 각도(-80~80) 배열( [...] )
+    - positions: 0~9번 모터 각도 (-80~80) 배열( [...] )
     - movetime: 모터 이동 시간(ms) - 모터가 정해진 위치까지 이동하는 시간 [default: None]
+      - movetime이 있으면 해당 시간까지 모터를 이동시키기 위한 속도, 가속도 값을 계산하여 모터를 제어하고, movetime이 없으면 이전에 설정한 속도, 가속도 값에 의해 모터를 이동시킵니다.
   - 반환값
     -  True(성공), None
     -  False(실패), Error code
@@ -258,21 +261,23 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 - `pibo.get_motion(name)`
 
   - 기능: 모션 종류 및 정보를 조회합니다.
+    - `pibo.set_motion(name, cycle)`에서 사용할 name 값을 조회할 수 있습니다.
+    - `pibo.get_motion()`으로 모션 목록을 조회한 후, 모션을 하나 선택하여 `pibo.get_motion(name)`으로 해당 모션에 대한 상세 정보를 얻을 수 있습니다.
   - 매개변수
 
-    - name: 모션 이름 [default: None]
+    - name: 모션 이름
   - 반환값
-    - True(성공), 모션 종류(name==None) 또는 해당 모션 상세 정보 조회(name!=None)
+    - True(성공), 모션 종류 or 해당 모션 상세 정보 조회
+      - `pibo.get_motion()`: 파이보에서 이용 가능한 모션 종류 전체를 반환합니다.
+      - `pibo.get_motion(name)`: 입력한 매개변수에 대한 상세 정보를 반환합니다.
     - False(실패), Error code
-  
-```python
-  # 모션 목록 조회
-  pibo.get_motion()
-  # cheer3 상세 정보 조회
-  pibo.get_motion("cheer3")
-```
 
-> [전체 모션 리스트]
+  ```python
+  pibo.get_motion()	# ['stop', 'stop_body', 'sleep', 'lookup', 'left', ...]
+  pibo.get_motion("sleep")	# {'comment': 'sleep', 'init': [0, 0, -70, -25, 0, 15, 0, 0, 70, 25], 'init_def': 0, ...}
+  ```
+
+  > [전체 모션 리스트]
   >
   > stop(2), sleep, lookup, left(2), right(2), forward(2), backward(2),  step(2), hifive, cheer(3), wave(6), think(4), wake_up(3), hey(2),  yes/no, breath(4), head, spin, clapping(2), hankshaking, bow, greeting,  hand(4), foot(2),  speak(9),  welcome, 감정(10), handup(2), look(2),  dance(5), test(5) -  괄호 안은 개수를 의미
 
@@ -385,7 +390,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   pibo.translate('즐거운 금요일', 'en')
   ```
 
-- `pibo.tts(string, filename, lang)`
+- `pibo.tts(string, filename)`
 
   - 기능: Text(문자)를 Speech(음성)로 변환합니다.
 
@@ -427,17 +432,15 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
       
     - filename: 저장할 파일 이름(mp3) [default: tts.mp3]
 
-    - lang: 한글(ko) / 영어(en) [default: ko]
-    
   - 반환값
-
+  
     - True(성공), None
-    - False(실패), Error code
-
+  - False(실패), Error code
+  
   ```python
-  pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3", "ko")
+pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3")
   ```
-
+  
 - `pibo.stt(filename, lang, timeout)`
 
   - 기능: Speech(음성)를 Text(문자)로 변환합니다.
@@ -629,3 +632,5 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   ```python
   pibo.train_face("kim")
   ```
+
+  

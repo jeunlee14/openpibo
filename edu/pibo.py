@@ -1,5 +1,4 @@
-import os, sys, time, cv2
-import numpy as np
+import sys, time
 
 from utils.config import Config as cfg
 sys.path.append(cfg.OPENPIBO_PATH + '/lib')
@@ -16,6 +15,7 @@ from vision.visionlib import cDetect
 from vision.stream import VideoStream
 
 from threading import Thread
+from queue import Queue
 
 
 class Edu_Pibo:
@@ -34,14 +34,16 @@ class Edu_Pibo:
         self.face = cFace(conf=cfg)
         self.detect = cDetect(conf=cfg)
         self.device.send_cmd(self.device.code['PIR'], "on")
+        self.que = Queue()
 
 
     # [Audio] - mp3/wav 파일 재생
     def play_audio(self, filename=None, out='local', volume='-2000', background=True):
         if filename is not None:
+            file_list = ('mp3', 'wav')
             ext = filename.find('.')
             file_ext = filename[ext+1:]
-            if file_ext != ('mp3' or 'wav'):
+            if file_ext not in file_list:
                 return False, "Error > Audio filename must be 'mp3', 'wav'" 
         try:
             if out not in ("local", "hdmi", "both"):
@@ -85,9 +87,9 @@ class Edu_Pibo:
                         return False, "Error > RGB value should be 0~255"
                     else:
                         if len(color) == 3:
-                            self.device.send_raw("#20:{}!".format(",".join(str(p) for p in color)))
+                            cmd = "#20:{}!".format(",".join(str(p) for p in color))
                         elif len(color) == 6:
-                            self.device.send_raw("#23:{}!".format(",".join(str(p) for p in color)))
+                            cmd = "#23:{}!".format(",".join(str(p) for p in color))
                         else:
                             return False, "Error > Invalid format"
             else:
@@ -96,7 +98,11 @@ class Edu_Pibo:
                     return False, "Error > The color does not exist"
                 else:
                     color = color_list[color]
-                    self.device.send_raw("#20:{}!".format(",".join(str(p) for p in color)))
+                    cmd = "#20:{}!".format(",".join(str(p) for p in color))
+            if self.check:
+                self.que.put(cmd)
+            else:
+                self.device.send_raw(cmd)
             return True, None
         except Exception as e:
             return False, e
@@ -105,7 +111,11 @@ class Edu_Pibo:
     # [Neopixel] - LED OFF
     def eye_off(self):
         try:
-            self.device.send_raw("#20:0,0,0:!")
+            cmd = "#20:0,0,0:!"
+            if self.check:
+                self.que.put(cmd)
+            else:
+                self.device.send_raw(cmd)
             return True, None
         except Exception as e:
             return False, e
@@ -150,21 +160,23 @@ class Edu_Pibo:
 
         while True:
             if self.check == False:
-                return
+                break
+
+            if self.que.qsize():
+                self.device.send_raw(self.que.get())
 
             if time.time() - self.system_check_time > 1:
                 ret = self.device.send_cmd(self.device.code["SYSTEM"])
-                msg = "SYSTEM" + ': ' + ret[3:]
+                msg = "SYSTEM: " + ret[3:]
                 func(msg)
                 self.system_check_time = time.time()
             
             if time.time() - self.battery_check_time > 10:
                 ret = self.device.send_cmd(self.device.code["BATTERY"])
-                msg = "BATTERY" + ': ' + ret[3:]
+                msg = "BATTERY: " + ret[3:]
                 func(msg)
                 self.battery_check_time = time.time()
-
-            time.sleep(0.1)
+            time.sleep(0.01)
 
 
     # [Device] - 디바이스 상태 확인(thread)
@@ -189,63 +201,60 @@ class Edu_Pibo:
 
 
     # [Motion] - 모터 1개 제어(위치/속도/가속도)
-    def motor(self, n, position, speed=None, accel=None):
-        if n < 0 or n > 9:
-            return False, "Error > Channel value should be 0~9"
-        if position > 80 or position < -80:
-            return False, "Error > Position value should be -80~80"
-        if speed is not None and (speed < 0 or speed > 255):
-            return False, "Error > Speed value should be 0~255"
-        if accel is not None and (accel < 0 or accel > 255):
-            return False, "Error > Acceleration value should be 0~255"
-
+    def motor(self, n=None, position=None, speed=None, accel=None):
+        if n is None:
+            return False, "Error > Channel is required"
+        if position is None:
+            return False, "Error > Position is required"
         try:
-            self.motion.set_speed(n, speed)
-            self.motion.set_acceleration(n, accel)
+            if n < 0 or n > 9:
+                return False, "Error > Channel value should be 0~9"
+            if position > 80 or position < -80:
+                return False, "Error > Position value should be -80~80"
+            if speed:
+                if speed < 0 or speed > 255:
+                    return False, "Error > Speed value should be 0~255"
+                self.motion.set_speed(n, speed)
+            if accel:
+                if accel < 0 or accel > 255:
+                    return False, "Error > Acceleration value should be 0~255"
+                self.motion.set_acceleration(n, accel)
             self.motion.set_motor(n, position)
             return True, None
-
         except Exception as e:
             return False, e
 
 
     # [Motion] - 모든 모터 제어(위치/속도/가속도)
-    def motors(self, positions, speed=None, accel=None):
-        if len(positions) != 10:
+    def motors(self, positions=None, speed=None, accel=None):
+        if positions is None:
             return False, "Error > 10 positions are required"
-        if speed is not None and len(speed) != 10:
-            return False, "Error > 10 speeds are required"
-        if accel is not None and len(accel) != 10:
-            return False, "Error > 10 accelerations are require"
-
         try:
-            mpos = [positions[i]*10 for i in range(len(positions))]
-
-            if speed is None and accel is None:
-                os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
-            elif speed is not None and accel is None:
-                os.system("servo speed all {}".format(" ".join(map(str, speed))))
-                os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
-            elif accel is not None and speed is None:
-                os.system("servo accelerate all {}".format(" ".join(map(str, accel))))
-                os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
-            elif speed is not None and accel is not None:
-                os.system("servo speed all {}".format(" ".join(map(str, speed))))
-                os.system("servo accelerate all {}".format(" ".join(map(str, accel))))
-                os.system("servo mwrite {}".format(" ".join(map(str, mpos))))
+            if len(positions) != 10:
+                return False, "Error > 10 positions are required"
+            if speed:
+                if len(speed) != 10:
+                    return False, "Error > 10 speeds are required"
+                self.motion.set_speeds(positions, speed)
+            if accel:
+                if len(accel) != 10:
+                    return False, "Error > 10 accelerations are require"
+                self.motion.set_accelerations(positions, accel)
+            self.motion.set_motors(positions)
             return True, None
         except Exception as e:
             return False, e
 
 
     # [Motion] - 모든 모터 제어(movetime)
-    def motors_movetime(self, positions, movetime=None):
-        if len(positions) != 10:
+    def motors_movetime(self, positions=None, movetime=None):
+        if positions is None:
             return False, "Error > 10 positions are required"
-        elif type(movetime) != int:
-            return False, "Error > Movetime is only available int type"
-
         try:
+            if len(positions) != 10:
+                return False, "Error > 10 positions are required"
+            if movetime is not None and movetime < 0:
+                return False, "Error > Movetime is only available positive number"
             self.motion.set_motors(positions, movetime)
             return True, None
         except Exception as e:
@@ -262,7 +271,9 @@ class Edu_Pibo:
 
 
     # [Motion] - 모션 수행
-    def set_motion(self, name, cycle=1):
+    def set_motion(self, name=None, cycle=1):
+        if name is None:
+            return False, "Error > Name is required"
         try:
             ret = self.motion.set_motion(name, cycle)
             if ret ==  False:
@@ -273,15 +284,14 @@ class Edu_Pibo:
 
 
     # [OLED] - 문자
-    def draw_text(self, points, text, size=None):
-        if type(points) != tuple:
-            return False, "Error > Invalid format"
-        else:
-            if len(points) != 2:
-                return False, "Error > 2 points are required"
-
+    def draw_text(self, points=None, text=None, size=None):
+        if points is None:
+            return False, "Error > 2 points are required"
+        if text is None:
+            return False, "Error > Text is required"
         try:
-            self.oled.set_font(size=size)
+            if size is not None:
+                self.oled.set_font(size=size)
             self.oled.draw_text(points, text)
             return True, None
         except IndexError as e:
@@ -294,6 +304,8 @@ class Edu_Pibo:
 
     # [OLED] - 이미지
     def draw_image(self, filename=None):
+        if filename is None:
+            return False, "Error > Filename is required"
         try:
             self.oled.draw_image(filename)
             return True, None
@@ -302,7 +314,11 @@ class Edu_Pibo:
 
 
     # [OLED] - 도형
-    def draw_figure(self, points, shape, fill=None):
+    def draw_figure(self, points=None, shape=None, fill=None):
+        if points is None:
+            return False, "Error > 4 points are required"
+        if shape is None:
+            return False, "Error > Shape is required"
         try:
             if shape == 'rectangle' or shape == '사각형' or shape == '네모':
                 self.oled.draw_rectangle(points, fill)
@@ -347,7 +363,7 @@ class Edu_Pibo:
     # [Speech] - 문장 번역
     def translate(self, string=None, to='ko'):
         if string is None:
-            return False, "translate() missing 1 required positional argument: 'string'"
+            return False, "Error > String is required"
         try:
             ret = self.speech.translate(string, to)
             return True, ret
@@ -356,9 +372,10 @@ class Edu_Pibo:
 
 
     # [Speech] - TTS
-    def tts(self, string, filename='tts.mp3', lang='ko'):
-        voice_list= ('WOMAN_READ_CALM' or 'MAN_READ_CALM' or 'WOMAN_DIALOG_BRIGHT' or 'MAN_DIALOG_BRIGHT')
-
+    def tts(self, string=None, filename='tts.mp3'):
+        if string is None:
+            return False, "Error > String is required"
+        voice_list= ('WOMAN_READ_CALM', 'MAN_READ_CALM', 'WOMAN_DIALOG_BRIGHT', 'MAN_DIALOG_BRIGHT')
         if '<speak>' not in string or '</speak>' not in string:
             return False, "Error > Invalid string format"
         elif '<voice' in string and '</voice>' in string:
@@ -367,9 +384,8 @@ class Edu_Pibo:
             voice_name = string[voice_start+2:voice_end-1]
             if voice_name not in voice_list:
                 return False, "Error > The voice name does not exist" 
-
         try:
-            self.speech.tts(string, filename, lang)
+            self.speech.tts(string, filename)
             return True, None
         except Exception as e:
             return False, e
@@ -403,13 +419,10 @@ class Edu_Pibo:
                 break
             self.img = vs.read()
             img = self.img
-            img = cv2.resize(img, (128,64))
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            img = self.camera.show_oled(img, 128, 64)
             #_, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
             if self.flash:
-                rows, cols = img.shape[0:2]
-                m45 = cv2.getRotationMatrix2D((cols/2,rows/2), 45, 0.8)
-                img = cv2.warpAffine(img, m45, (cols,rows))
+                img = self.camera.rotate45(img)
                 self.oled.nparray_to_PIL(img)
                 self.oled.show()
                 time.sleep(0.3)
@@ -454,8 +467,7 @@ class Edu_Pibo:
             else:
                 img = self.camera.read()
                 self.camera.imwrite(filename, img)
-                img = cv2.resize(img, (128,64))
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                img = self.camera.show_oled(img, 128, 64)
                 #_, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
                 self.oled.nparray_to_PIL(img)
                 self.oled.show()
@@ -512,7 +524,7 @@ class Edu_Pibo:
                 img = self.camera.read()
 
             height, width = img.shape[:2]
-            img_hls = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
+            img_hls = self.camera.BGR_HLS(img)
             cnt = 0
             sum_hue = 0
             
@@ -592,7 +604,9 @@ class Edu_Pibo:
 
 
     # [Vision] - 얼굴 학습
-    def train_face(self, name):
+    def train_face(self, name=None):
+        if name is None:
+            return False, "Error > Name is required"
         try:
             if self.onair:
                 img = self.img
@@ -628,7 +642,9 @@ class Edu_Pibo:
 
 
     # [Vision] - facedb 불러옴
-    def load_facedb(self, filename):
+    def load_facedb(self, filename=None):
+        if filename is None:
+            return False, "Error > Filename is required"
         try:
             self.face.load_db(filename)
             return True, None
@@ -637,7 +653,9 @@ class Edu_Pibo:
 
 
     # [Vision] - facedb를 파일로 저장
-    def save_facedb(self, filename):
+    def save_facedb(self, filename=None):
+        if filename is None:
+            return False, "Error > Filename is required"
         try:
             self.face.save_db(filename)
             return True, None
@@ -646,7 +664,9 @@ class Edu_Pibo:
 
 
     # [Vision] - facedb에 등록된 얼굴 삭제
-    def delete_face(self, name):
+    def delete_face(self, name=None):
+        if name is None:
+            return False, "Error > Name is required"
         try:
             ret = self.face.delete_face(name)
             return ret, None
