@@ -198,11 +198,13 @@ int SetTarget(unsigned char channel, int value)
 
   if(target > max){
     target = max;
-    printf("Warn > Target value change to [%d]:%d\n", channel, motor_range[channel]);
+    motor_pos[channel] = target;
+    printf("Warn > Target value change to [%d]:%d, (-%d ~ %d)\n", channel, motor_range[channel], motor_range[channel], motor_range[channel]);
   }
   if(target < min){
     target = min;
-    printf("Warn > Target value change to [%d]:%d\n", channel, 0 - motor_range[channel]);
+    motor_pos[channel] = target;
+    printf("Warn > Target value change to [%d]:%d, (-%d ~ %d)\n", channel, 0 - motor_range[channel], motor_range[channel], motor_range[channel]);
   }
 #ifdef DBG
   printf ("Entering the SetTarget channel:%d target: %d\n", channel, target);
@@ -267,11 +269,13 @@ int SetMultiTarget(int* pTarget)
 
     if(target > max){
       target = max;
-      printf("Warn > Target value change to [%d]:%d\n", ch, motor_range[ch]);
+      motor_pos[ch] = target;
+      printf("Warn > Target value change to [%d]:%d, (-%d ~ %d)\n", ch, motor_range[ch], motor_range[ch], motor_range[ch]);
     }
     if(target < min){
       target = min;
-      printf("Warn > Target value change to [%d]:%d\n", ch, 0 - motor_range[ch]);
+      motor_pos[ch] = target;
+      printf("Warn > Target value change to [%d]:%d, (-%d ~ %d)\n", ch, 0 - motor_range[ch], motor_range[ch], motor_range[ch]);
     }
 
     command[idx++] = target & 0x7F;
