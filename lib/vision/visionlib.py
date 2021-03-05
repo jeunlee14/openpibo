@@ -90,6 +90,20 @@ class cCamera:
     img_edge = cv2.cvtColor(img_edge, cv2.COLOR_GRAY2RGB)
     return cv2.bitwise_and(img_color, img_edge)
 
+  def show_oled(self, img, w=128, h=64):
+    img = cv2.resize(img, (w, h))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return img
+
+  def rotate45(self, img):
+    rows, cols = img.shape[0:2]
+    m45 = cv2.getRotationMatrix2D((cols/2,rows/2), 45, 0.8)
+    img = cv2.warpAffine(img, m45, (cols,rows))
+    return img
+
+  def BGR_HLS(self, img):
+    return cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
+
 class cFace:
   def __init__(self, conf=None):
     self.model_path = conf.MODEL_PATH

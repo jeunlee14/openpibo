@@ -32,6 +32,14 @@ class cMotion:
   def set_acceleration(self, n, accl):
     os.system("servo accelerate {} {}".format(n, accl))
 
+  def set_speeds(self, positions, spds):
+    mpos = [positions[i]*10 for i in range(len(positions))]
+    os.system("servo speed all {}".format(" ".join(map(str, spds))))
+
+  def set_accelerations(self, positions, accls):
+    mpos = [positions[i]*10 for i in range(len(positions))]
+    os.system("servo accelerate all {}".format(" ".join(map(str, accls))))
+
   def get_motion(self, name=None):
     ret = self.profile.get(name)
     ret = list(self.profile.keys()) if ret == None else ret
