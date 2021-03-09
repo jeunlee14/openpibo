@@ -41,7 +41,7 @@ class Edu_Pibo:
     def play_audio(self, filename=None, out='local', volume='-2000', background=True):
         if filename is not None:
             file_list = ('mp3', 'wav')
-            ext = filename.find('.')
+            ext = filename.rfind('.')
             file_ext = filename[ext+1:]
             if file_ext not in file_list:
                 return False, "Error > Audio filename must be 'mp3', 'wav'" 

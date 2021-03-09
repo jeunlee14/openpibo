@@ -435,7 +435,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 반환값
   
     - True(성공), None
-  - False(실패), Error code
+    - False(실패), Error code
   
   ```python
 pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3")
@@ -634,3 +634,5 @@ pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<b
   ```
 
   
+
+
