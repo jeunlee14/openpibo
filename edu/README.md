@@ -327,9 +327,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   > [전체 모션 리스트]
   >
-  > stop, stop_body, sleep, lookup, left, left_half, right, right_half, foward1~2, backward1~2, step1~2, hifive, cheer1~3, wave1~6, think1~4, wake_up1~3, hey1~2, yes_h, no_h, breath1~3, breath_long, head_h, spin_h, clapping1~2, hankshaking, bow, greeting, hand1~4, foot1~2, speak1~2, speak_n1~2, speak_q, speak_r1~2, speak_l1~2, welcome, happy1~3, excite1~2, boring1~2, sad1~3, handup_r, handup_l, look_r, look_l, dance1~5, motion_test, test1~4
+  > stop, stop_body, sleep, lookup, left, left_half, right, right_half, foward1-2, backward1-2, step1-2, hifive, cheer1-3, wave1-6, think1-4, wake_up1-3, hey1-2, yes_h, no_h, breath1-3, breath_long, head_h, spin_h, clapping1-2, hankshaking, bow, greeting, hand1-4, foot1-2, speak1-2, speak_n1-2, speak_q, speak_r1-2, speak_l1-2, welcome, happy1-3, excite1-2, boring1-2, sad1-3, handup_r, handup_l, look_r, look_l, dance1-5, motion_test, test1-4
   >
-  > (참고: foward1~2는 forward1, forward2  두 종류가 있음을 의미합니다.)
+  > (참고: foward1-2는 forward1, forward2  두 종류가 있음을 의미합니다.)
 
 - `pibo.set_motion(name, cycle)`
 
