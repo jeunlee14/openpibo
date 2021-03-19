@@ -713,9 +713,6 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
       - Error code2: (delete_facedb()를 정상적으로 실행하지 못한 경우)
   
   ```python
-pibo.train_face("kim")
+  pibo.train_face("kim")
   ```
   
-  
-
-
