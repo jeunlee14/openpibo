@@ -4,6 +4,7 @@ import oled.busio as busio
 import oled.digitalio as digitalio
 from PIL import Image, ImageDraw, ImageFont
 import PIL.ImageOps
+import cv2
 
 class cOled:
   #"font_path":"/home/pi/openpibo/lib/oled/NanumGothic.ttf",
@@ -39,7 +40,7 @@ class cOled:
   def draw_image(self, filename):
     self.image = Image.open(filename).convert('1')
 
-  def nparray_to_PIL(self, img):
+  def draw_data(self, img):
     self.image = Image.fromarray(img).convert('1')
 
   def draw_rectangle(self, points, fill=None):
@@ -68,3 +69,5 @@ class cOled:
     self.oled.fill(0)
     self.oled.show()
 
+  def size_check(self, filename):
+    return cv2.imread(filename).shape

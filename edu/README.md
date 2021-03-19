@@ -153,17 +153,44 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   ```python
   pibo.eye_on(255,0,0)	# 양쪽 눈 제어
   pibo.eye_on(0,255,0,0,0,255) # 양쪽 눈 개별 제어
-  pibo.eye_on('Red') #'RED', 'red' 가능
+  
+  pibo.eye_on('Red') # 양쪽 눈 제어('RED', 'red' 가능)
+  pibo.eye_on('aqua', 'pink') # 양쪽 눈 개별 제어
   ```
 
   - 반환값
     - True(성공), None
     - False(실패), Error code
       - Error code1: color 미입력 (RGB or Color is required)
-      - Error code2: 0~255 범위를 color 입력 (RGB value should be 0~255)
+      - Error code2: 0-255 범위를 color 입력 (RGB value should be 0-255)
       - Error code3: 입력한 RGB color 개수가 3 또는 6이 아닌 경우 (Invalid format)
       - Error code4: color_list에 없는 color 입력 (The color does not exist)
       - Error code5: eye_on()를 정상적으로 실행하지 못한 경우
+
+- `pibo.get_colorList()`
+
+  - 기능: `pibo.eye_on`에 입력할 수 있는 color 목록을 조회합니다.
+  - 반환값
+    - True(성공), 컬러 목록 전체 조회
+    - False(실패), ==에러==
+
+  ```python
+  pibo.get_colorList()	# {'black': (0, 0, 0), 'white': (255, 255, 255), 'red': (255, 0, 0), ...}
+  ```
+
+- ==`pibo.make_color(name, rgb)`==
+
+  - 기능: 직접 원하는 색상을 color_list에 추가합니다.
+  - 매개변수
+    - name: 추가할 색상 이름
+    - rgb: RGB (0~255 숫자) 
+  - ==반환값==
+    - True(성공), 
+    - False(실패),
+
+  ```python
+  pibo.make_color('lime', (,,))
+  ```
 
 - `pibo.eye_off()`
 
@@ -233,9 +260,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - True(성공), None
     - False(실패), Error code
       - Error code1: n 또는 position 미입력 (Channel/Position is required)
-      - Error code2: 0~9 범위를 벗어난 n 입력 (Channel value should be 0~9)
-      - Error code3: -80~80 범위를 벗어난 position 입력 (Position value should be -80~80)
-      - Error code4: 0~255 범위를 벗어난 speed 또는 accel 입력 (Speed/Acceleration value should be 0~255)
+      - Error code2: 0-9 범위를 벗어난 n 입력 (Channel value should be 0-9)
+      - Error code3: -80 - 80 범위를 벗어난 position 입력 (Position value should be -80 - 80)
+      - Error code4: 0-255 범위를 벗어난 speed 또는 accel 입력 (Speed/Acceleration value should be 0-255)
       - Error code5: motor()를 정상적으로 실행하지 못한 경우
 
   ```python
@@ -300,7 +327,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   > [전체 모션 리스트]
   >
-  > stop(2), sleep, lookup, left(2), right(2), forward(2), backward(2),  step(2), hifive, cheer(3), wave(6), think(4), wake_up(3), hey(2),  yes/no, breath(4), head, spin, clapping(2), hankshaking, bow, greeting,  hand(4), foot(2),  speak(9),  welcome, 감정(10), handup(2), look(2),  dance(5), test(5) -  괄호 안은 개수를 의미
+  > stop, stop_body, sleep, lookup, left, left_half, right, right_half, foward1~2, backward1~2, step1~2, hifive, cheer1~3, wave1~6, think1~4, wake_up1~3, hey1~2, yes_h, no_h, breath1~3, breath_long, head_h, spin_h, clapping1~2, hankshaking, bow, greeting, hand1~4, foot1~2, speak1~2, speak_n1~2, speak_q, speak_r1~2, speak_l1~2, welcome, happy1~3, excite1~2, boring1~2, sad1~3, handup_r, handup_l, look_r, look_l, dance1~5, motion_test, test1~4
+  >
+  > (참고: foward1~2는 forward1, forward2  두 종류가 있음을 의미합니다.)
 
 - `pibo.set_motion(name, cycle)`
 
@@ -349,10 +378,10 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
 - `pibo.draw_image(filename)`
 
-  - 기능: 그림을 그립니다. (128X64 파일)
-    - 다른 크기의 파일은 지원하지 않습니다.
+  - 기능: 이미지를 그립니다. (128X64 png 파일)
+    - 다른 크기 또는 다른 확장자 파일은 지원하지 않습니다.
   - 매개변수
-    - filename: 그림 파일의 경로
+    - filename: 이미지 파일의 경로
   - 반환값
     - True(성공), None
     - False(실패), Error code

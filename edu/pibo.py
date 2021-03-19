@@ -1,4 +1,4 @@
-import sys, time
+import sys, time, pickle
 
 from utils.config import Config as cfg
 sys.path.append(cfg.OPENPIBO_PATH + '/lib')
@@ -16,6 +16,7 @@ from vision.stream import VideoStream
 
 from threading import Thread
 from queue import Queue
+from pathlib import Path
 
 
 class Edu_Pibo:
@@ -77,7 +78,7 @@ class Edu_Pibo:
             'purple': (255,0,255),    
             'pink': (255,51,153),
         }
-  
+
         if len(color) == 0:
             return False, "Error > RGB or Color is required"
         try:
@@ -85,20 +86,31 @@ class Edu_Pibo:
                 for i in color:
                     if i < 0 or i > 255:
                         return False, "Error > RGB value should be 0~255"
-                    else:
-                        if len(color) == 3:
-                            cmd = "#20:{}!".format(",".join(str(p) for p in color))
-                        elif len(color) == 6:
-                            cmd = "#23:{}!".format(",".join(str(p) for p in color))
-                        else:
-                            return False, "Error > Invalid format"
-            else:
-                color = color[-1].lower()
-                if color not in color_list.keys():
-                    return False, "Error > The color does not exist"
-                else:
-                    color = color_list[color]
+                if len(color) == 3:
                     cmd = "#20:{}!".format(",".join(str(p) for p in color))
+                elif len(color) == 6:
+                    cmd = "#23:{}!".format(",".join(str(p) for p in color))
+                else:
+                    return False, "Error > Invalid format"
+            else:
+                if len(color) == 1:
+                    color = color[-1].lower()
+                    if color not in color_list.keys():
+                        return False, "Error > The color does not exist"
+                    else:
+                        color = color_list[color]
+                        cmd = "#20:{}!".format(",".join(str(p) for p in color))
+                elif len(color) == 2:
+                    l_color, r_color = color[0].lower(), color[1].lower()
+                    if l_color in color_list.keys() and r_color in color_list.keys():
+                        l_color = color_list[l_color]
+                        r_color = color_list[r_color]
+                        color = l_color + r_color
+                        cmd = "#23:{}!".format(",".join(str(p) for p in color))
+                    else:
+                        return False, "Error > The color does not exist" 
+                else:
+                    return False, "Error > Only 2 colors can be entered"
             if self.check:
                 self.que.put(cmd)
             else:
@@ -108,10 +120,42 @@ class Edu_Pibo:
             return False, e
 
 
+    # [Neopixel] - color list 조회(데이터 파일)
+    # def get_colorList(self):
+    #     try:
+    #         return True, color_list
+    #     except Exception as e:
+    #         return False, e
+
+
+    # [Neopixel] - color 제작
+    # def make_color(self, name=None, rgb=None):
+    #     if name is None:
+    #         return False, "Error > Name is required"
+    #     if rgb is None:
+    #         return False, "Error > RGB value is required"
+    #     if rgb:
+    #         if len(rgb) != 3:
+    #             return False, "Error > 3 values are required(R, G, B)"
+    #         for i in rgb:
+    #             if i < 0  or i > 255:
+    #                 return False, "RGB value should be 0~255"
+    #     if name in self.color_list.keys():
+    #         print(self.color_list.keys())
+    #         print(self.color_list)
+    #         return False, "The color name is already exists"
+    #     try:
+    #         self.color_list[name] = rgb
+    #         return True, self.color_list
+    #         print('color list', self.color_list)
+    #     except Exception as e:
+    #         return False, e
+
+
     # [Neopixel] - LED OFF
     def eye_off(self):
         try:
-            cmd = "#20:0,0,0:!"
+            cmd = "#20:0,0,0!"
             if self.check:
                 self.que.put(cmd)
             else:
@@ -122,33 +166,26 @@ class Edu_Pibo:
 
 
     # [Device] - 디바이스 상태 확인
-    def check_device(self, system):
-        system = system.upper()
+    def check_device(self, system=None):
+        device_list = ('BATTERY', 'SYSTEM')
+        if system:
+            system = system.upper()
+            if system not in device_list:
+                return False, "Error > System must be 'battery', 'system'"
+        else:
+            return False, "Error > Enter the device name to check"
         try:
+            ret = self.device.send_cmd(self.device.code[system])
             if system == "BATTERY":
-                ret = self.device.send_cmd(self.device.code[system])
                 ans = system + ': ' + ret[3:]
             elif system == "SYSTEM":
-                ret = self.device.send_cmd(self.device.code["SYSTEM"])
-
-                sys = ""
-                result = []
-                for i in ret[3:]:
-                    if i == "-":
-                        result.append(sys)
-                        sys = ""
-                        continue
-                    sys += i
-
-                system_dict = {"PIR": "", "TOUCH": "", "DC_CONN": "", "BUTTON": "",}
-                system_dict["PIR"] = result[0]
-                system_dict["TOUCH"] = result[1]
-                system_dict["DC_CONN"] = result[2]
-                system_dict["BUTTON"] = result[3]
-                ans = system_dict
+                result = ret[3:].split('-')
+                ans = {"PIR": "", "TOUCH": "", "DC_CONN": "", "BUTTON": "",}
+                ans["PIR"] = result[0]
+                ans["TOUCH"] = result[1]
+                ans["DC_CONN"] = result[2]
+                ans["BUTTON"] = result[3]
             return True, ans
-        except UnboundLocalError:
-            return False, "Error > System must be 'battery', 'system'"
         except Exception as e:
             return False, e
 
@@ -157,7 +194,6 @@ class Edu_Pibo:
     def thread_device(self, func):
         self.system_check_time = time.time()
         self.battery_check_time = time.time()
-
         while True:
             if self.check == False:
                 break
@@ -180,7 +216,11 @@ class Edu_Pibo:
 
 
     # [Device] - 디바이스 상태 확인(thread)
-    def start_devices(self, func):
+    def start_devices(self, func=None):
+        if func is None:
+            return False, "Error > Func is required"
+        if self.check:
+            return False, "Error > Start_devices is already running"
         try:
             self.check = True
             t = Thread(target=self.thread_device, args=(func,))
@@ -209,6 +249,7 @@ class Edu_Pibo:
         try:
             if n < 0 or n > 9:
                 return False, "Error > Channel value should be 0~9"
+            # 모터 번호에 따라 range 설정
             if position > 80 or position < -80:
                 return False, "Error > Position value should be -80~80"
             if speed:
@@ -227,19 +268,21 @@ class Edu_Pibo:
 
     # [Motion] - 모든 모터 제어(위치/속도/가속도)
     def motors(self, positions=None, speed=None, accel=None):
+        # for 문으로 하나씩 체크(3개다 pos, spd, acl)
+        # if positions: 코드 통일
         if positions is None:
             return False, "Error > 10 positions are required"
+        if len(positions) != 10:
+            return False, "Error > 10 positions are required"
+        if speed:
+            if len(speed) != 10:
+                return False, "Error > 10 speeds are required"
+            self.motion.set_speeds(speed)
+        if accel:
+            if len(accel) != 10:
+                return False, "Error > 10 accelerations are require"
+            self.motion.set_accelerations(accel)
         try:
-            if len(positions) != 10:
-                return False, "Error > 10 positions are required"
-            if speed:
-                if len(speed) != 10:
-                    return False, "Error > 10 speeds are required"
-                self.motion.set_speeds(positions, speed)
-            if accel:
-                if len(accel) != 10:
-                    return False, "Error > 10 accelerations are require"
-                self.motion.set_accelerations(positions, accel)
             self.motion.set_motors(positions)
             return True, None
         except Exception as e:
@@ -285,19 +328,16 @@ class Edu_Pibo:
 
     # [OLED] - 문자
     def draw_text(self, points=None, text=None, size=None):
-        if points is None:
-            return False, "Error > 2 points are required"
-        if text is None:
-            return False, "Error > Text is required"
+        # if points is None:
+        #     return False, "Error > 2 points are required"
+        # else: # 다시##############################################
+        #     if len(points) != 2:
+        #         return False, "Error > 2 points are required"
         try:
             if size is not None:
                 self.oled.set_font(size=size)
             self.oled.draw_text(points, text)
             return True, None
-        except IndexError as e:
-            return False, e
-        except TypeError as e:
-            return False, e
         except Exception as e:
             return False, e
 
@@ -306,6 +346,18 @@ class Edu_Pibo:
     def draw_image(self, filename=None):
         if filename is None:
             return False, "Error > Filename is required"
+        else:
+            ext = filename.rfind('.')
+            file_ext = filename[ext+1:]
+            if file_ext != 'png':
+                return False, "Error > Only png files are possible"
+            file_exist = Path(filename).is_file()
+            if file_exist:
+                img_check = self.oled.size_check(filename)
+                if img_check[0] != 64 or img_check[1] != 128:
+                    return False, "Error > Only 128X64 files are possible"
+            else:
+                return False, "Error > The filename does not exist"
         try:
             self.oled.draw_image(filename)
             return True, None
@@ -315,6 +367,9 @@ class Edu_Pibo:
 
     # [OLED] - 도형
     def draw_figure(self, points=None, shape=None, fill=None):
+        # ret=self.points_check("figure", points)
+        # if ret == False:
+        #     return False, ret
         if points is None:
             return False, "Error > 4 points are required"
         if shape is None:
@@ -331,7 +386,6 @@ class Edu_Pibo:
             return True, None
         except Exception as e:
             return False, e
-
 
     # [OLED] - 반전
     def invert(self):
@@ -360,10 +414,36 @@ class Edu_Pibo:
             return False, e
 
 
+    # def points_check(self, mode, points=None):
+    #     points = str(points)
+    #     if not points.isdigit():
+    #         if mode == "text":
+    #             return "Error > 2 points are required"
+    #         if mode == "figure":
+    #             print('ppp',points)
+    #             return "Error > 4 points are required"
+    #     else:
+    #         if mode == "text":
+    #            if len(points) != 2:
+    #                return "Error > 2 points are required"
+    #         if mode == "figure":
+    #             if len(points) != 4:
+    #                 return "Error > 4 points are required"
+    #     return True
+        # points 없을 때랑 2개만 입력했을 때(4개 입력해라)
+        # if points is None:
+        #     return False, "Error > 4 points are required"
+
+
+        
+
     # [Speech] - 문장 번역
     def translate(self, string=None, to='ko'):
+        to_list = ('ko', 'en')
         if string is None:
             return False, "Error > String is required"
+        if to not in to_list:
+            return False, "Error > Translation is only available 'ko', 'en'"
         try:
             ret = self.speech.translate(string, to)
             return True, ret
@@ -401,10 +481,13 @@ class Edu_Pibo:
 
 
     # [Speech] - 대화
-    def conversation(self, q):
+    def conversation(self, q=None):
         try:
-            ret = self.dialog.get_dialog(q)
-            return True, ret
+            if q:
+                ret = self.dialog.get_dialog(q)
+                return True, ret
+            else:
+                return False, "Error > Q is required"
         except Exception as e:
             return False, e
 
@@ -419,16 +502,16 @@ class Edu_Pibo:
                 break
             self.img = vs.read()
             img = self.img
-            img = self.camera.show_oled(img, 128, 64)
+            img = self.camera.convert_img(img, 128, 64)
             #_, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
             if self.flash:
-                img = self.camera.rotate45(img)
-                self.oled.nparray_to_PIL(img)
+                img = self.camera.rotate10(img)
+                self.oled.draw_data(img)
                 self.oled.show()
                 time.sleep(0.3)
                 self.flash = False
                 continue
-            self.oled.nparray_to_PIL(img)
+            self.oled.draw_data(img)
             self.oled.show()
 
 
@@ -436,7 +519,7 @@ class Edu_Pibo:
     def start_camera(self):
         try:
             if self.onair:
-                return
+                return False, "Error > Start_camera is already running"
             self.onair = True
             t = Thread(target=self.camera_on, args=())
             # t.daemon = True
@@ -467,9 +550,9 @@ class Edu_Pibo:
             else:
                 img = self.camera.read()
                 self.camera.imwrite(filename, img)
-                img = self.camera.show_oled(img, 128, 64)
+                img = self.camera.convert_img(img, 128, 64)
                 #_, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
-                self.oled.nparray_to_PIL(img)
+                self.oled.draw_data(img)
                 self.oled.show()
             return True, None
         except Exception as e:
@@ -524,7 +607,7 @@ class Edu_Pibo:
                 img = self.camera.read()
 
             height, width = img.shape[:2]
-            img_hls = self.camera.BGR_HLS(img)
+            img_hls = self.camera.bgr_hls(img)
             cnt = 0
             sum_hue = 0
             
@@ -575,6 +658,7 @@ class Edu_Pibo:
 
     # [Vision] - 얼굴 인식
     def search_face(self, filename="face.png"):
+        # 제일 큰 얼굴############################################################
         try:
             if self.onair:
                 img = self.img
@@ -605,6 +689,7 @@ class Edu_Pibo:
 
     # [Vision] - 얼굴 학습
     def train_face(self, name=None):
+        # 제일 큰 얼굴################################################################3
         if name is None:
             return False, "Error > Name is required"
         try:
