@@ -20,18 +20,6 @@ from pathlib import Path
 
 
 class Edu_Pibo:
-    colordb = {
-        'black': (0,0,0),
-        'white': (255,255,255),
-        'red': (255,0,0),
-        'orange': (200,75,0),
-        'yellow': (255,255,0),
-        'green': (0,255,0),
-        'blue': (0,0,255),
-        'aqua': (0,255,255),
-        'purple': (255,0,255),    
-        'pink': (255,51,153),
-    }
     def __init__(self):
         self.onair = False
         self.img = ""
