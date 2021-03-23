@@ -563,7 +563,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - False(실패), Error code
       - Error code1: string 미입력 (String is required)
       - Error code2: string 입력 형식 위반 (Invalid string format)
-    - Error code3: 제공되는 목소리 이외의 입력 (The voice name does not exist)
+      - Error code3: 제공되는 목소리 이외의 입력 (The voice name does not exist)
       - Error code4: tts()를 정상적으로 실행하지 못한 경우
   
   ```python
@@ -592,7 +592,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - q: 질문
   - 반환값
     - True(성공), 질문에 대한 응답
-  - False(실패), Error code (conversation()를 정상적으로 실행하지 못한 경우)
+    - False(실패), Error code (conversation()를 정상적으로 실행하지 못한 경우)
   
   ```python
   pibo.conversation('주말에 뭐하지?')
@@ -685,7 +685,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
 - `pibo.search_face(filename)`
 
-  - 기능: 이미지 안의 얼굴을 인식하여 성별과 나이를 추측하고, facedb를 바탕으로 인식한 얼굴의 이름과 정확도를 제공합니다.
+  - 기능: 이미지 안의 얼굴을 인식하여 성별과 나이를 추측하고, facedb를 바탕으로 인식한 얼굴의 이름과 정확도를 제공합니다. (인식된 얼굴 중 가장 크게 인식한 얼굴에 적용됩니다.)
   - 매개변수
     
     - filename: 저장할 파일 이름 [default: 'face.png']
@@ -703,7 +703,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
 - `pibo.train_face(name)`
 
-  - 기능: 사진 촬영 후 얼굴을 학습합니다.
+  - 기능: 사진 촬영 후 얼굴을 학습합니다. (인식된 얼굴 중 가장 크게 인식한 얼굴에 적용됩니다.)
   - 매개변수
     - name: 학습할 얼굴의 이름
   - 반환값
@@ -770,7 +770,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 반환값
     - True(성공), None
     - False(실패), Error code
-    - Error code1: filename 미입력 (Filename is required)
+      - Error code1: filename 미입력 (Filename is required)
       - Error code2: (delete_facedb()를 정상적으로 실행하지 못한 경우)
   
   ```python
