@@ -167,37 +167,85 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
       - Error code4: color_list에 없는 color 입력 (The color does not exist)
       - Error code5: eye_on()를 정상적으로 실행하지 못한 경우
 
-- `pibo.get_colorList()`
-
-  - 기능: `pibo.eye_on`에 입력할 수 있는 color 목록을 조회합니다.
-  - 반환값
-    - True(성공), 컬러 목록 전체 조회
-    - False(실패), ==에러==
-
-  ```python
-  pibo.get_colorList()	# {'black': (0, 0, 0), 'white': (255, 255, 255), 'red': (255, 0, 0), ...}
-  ```
-
-- ==`pibo.make_color(name, rgb)`==
-
-  - 기능: 직접 원하는 색상을 color_list에 추가합니다.
-  - 매개변수
-    - name: 추가할 색상 이름
-    - rgb: RGB (0~255 숫자) 
-  - ==반환값==
-    - True(성공), 
-    - False(실패),
-
-  ```python
-  pibo.make_color('lime', (,,))
-  ```
-
 - `pibo.eye_off()`
 
   - 기능: LED를 끕니다.
   - 반환값
     - True(성공), None
     - False(실패), Error code (eye_off()를 정상적으로 실행하지 못한 경우)
+
+
+- `pibo.make_color(color, rgb)`
+
+  - 기능: colordb에 원하는 색상을 추가합니다.
+  - 매개변수
+    - color: 추가할 색상 이름
+    - rgb: RGB (0~255) 튜플( (R,G,B) ) 
+  - 반환값
+    - True(성공), None
+    - False(실패), Error code (make_color()를 정상적으로 실행하지 못한 경우)
+
+  ```python
+  pibo.make_color('lime', (191,255,0))
+  ```
+
+- `pibo.get_colordb()`
+
+  - 기능: 사용 중인 colordb를 확인합니다. (`pibo.eye_on()`에 입력할 수 있는 color 목록 조회 )
+  - 반환값
+    - True(성공), 현재 로드된 colordb
+    - False(실패), Error code (get_colordb()를 정상적으로 실행하지 못한 경우)
+
+  ```python
+  pibo.get_colordb()	# {'black': (0, 0, 0), 'white': (255, 255, 255), 'red': (255, 0, 0), ...}
+  ```
+
+- `pibo.init_colordb()`
+
+  - 기능: colordb를 기존에 제공하는 colordb 상태로 초기화합니다. 
+  - 반환값
+    - True(성공), None
+    - False(실패), Error code (init_colordb()를 정상적으로 실행하지 못한 경우)
+
+- `pibo.save_colordb(filename)`
+
+  - 기능: colordb를 파일로 저장합니다.
+  - 매개변수
+    - filename: 저장할 데이터베이스 파일 이름
+  - 반환값
+    - True(성공), None
+    - False(실패), Error code (save_colordb()를 정상적으로 실행하지 못한 경우)
+
+  ```python
+  pibo.save_colordb('./new_colordb')
+  ```
+
+- `pibo.load_colordb(filename)`
+
+  - 기능: colordb를 불러옵니다.
+  - 매개변수
+    - filename: 불러올 colordb 파일 이름
+  - 반환값
+    - True(성공), None
+    - False(실패), Error code (load_colordb()를 정상적으로 실행하지 못한 경우)
+
+  ```python
+  # 기존에 제공되는 colordb를 new_colordb로 교체합니다. pibo.get_colordb()를 통해 현재 사용중인 colordb를 확인할 수 있습니다. 
+  pibo.load_colordb('new_colordb')
+  ```
+
+- `pibo.delete_color(color)`
+
+  - 기능: colordb에 등록된 색상을 삭제합니다.
+  - 매개변수
+    - color: 삭제할 색상 이름
+  - 반환값
+    - True(성공), None
+    - False(실패), Error code (delete_color()를 정상적으로 실행하지 못한 경우)
+
+  ```python
+  pibo.delete_color('lime')
+  ```
 
 ### 2.3 Device
 
@@ -253,8 +301,13 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 기능: 모터 1개를 제어합니다.
   - 매개변수
     - n: 모터 번호 (0~9)
-    - position: 모터 각도 (-80~80)
+
+    - position: 모터 각도
+
+      ( 모터별 허용 각도 범위: [25,35,80,30,50,25,25,35,80,30] )
+
     - speed: 모터 속도 (0~255) [default: None - 사용자가 이전에 설정한 값으로 제어]
+
     - accel: 모터 가속도 (0~255) [default: None- 사용자가 이전에 설정한 값으로 제어]
   - 반환값
     - True(성공), None
@@ -273,8 +326,12 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 10개의 모터를 개별 제어합니다.
   - 매개변수
-    - position: 0-9번 모터 각도 (-80~80) 배열( [...] )
+    - position: 0-9번 모터 각도 (-80~80) 배열( [...] ) 
+    
+      ( 모터별 허용 각도 범위: [25,35,80,30,50,25,25,35,80,30] )
+    
     - speed: 0-9번 모터 속도 (0~255) 배열( [...] ) [default: None - 사용자가 이전에 설정한 값으로 제어]
+    
     - accel: 0-9번 모터 가속도 (0~255) 배열( [...] ) [default: None - 사용자가 이전에 설정한 값으로 제어]
   - 반환값
     - True(성공), None
@@ -292,7 +349,11 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 기능: 입력한 시간 내에 모든 모터를 특정 위치로 이동합니다.
   - 매개변수
     - positions: 0-9번 모터 각도 (-80~80) 배열( [...] )
+    
+      ( 모터별 허용 각도 범위: [25,35,80,30,50,25,25,35,80,30] )
+    
     - movetime: 모터 이동 시간(ms) - 모터가 정해진 위치까지 이동하는 시간 [default: None]
+      
       - movetime이 있으면 해당 시간까지 모터를 이동시키기 위한 속도, 가속도 값을 계산하여 모터를 제어하고, movetime이 없으면 이전에 설정한 속도, 가속도 값에 의해 모터를 이동시킵니다.
   - 반환값
     -  True(성공), None
@@ -563,7 +624,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     
     - filename: 저장할 파일 이름 [default: capture.png]
     
-      (jpg, png 등 이미지 파일 형식 기입 필수)
+      (이미지 파일 형식 기입 필수 - jpg, jpeg, png, bmp)
   - 반환값
     
     - True(성공), None
@@ -629,7 +690,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     
     - filename: 저장할 파일 이름 [default: 'face.png']
     
-      (jpg, png 등 이미지 파일 형식 기입 필수)
+      (이미지 파일 형식 기입 필수 - jpg, jpeg, png, bmp)
   - 반환값
     - True(성공), {"name": 이름, "score": 정확도, "gender": 성별, "age": 나이} (정확도 0.4 이하 동일인 판정)
     - False(실패), Error code 
@@ -670,7 +731,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - True(성공), None
     - False(실패), Error code (init_facedb()를 정상적으로 실행하지 못한 경우)
 
-- `pibo.save_facedb(filname)`
+- `pibo.save_facedb(filename)`
 
   - 기능: facedb를 파일로 저장합니다.
   - 매개변수
