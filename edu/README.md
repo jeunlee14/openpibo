@@ -106,6 +106,22 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 ## 2. 교육용 APIs
 
+각 메서드의 반환값은 다음과 같은 형식으로 구성됩니다.
+
+- 실행 성공: `{'True': 'Success', 'data': None 또는 data}`
+  - 메서드에서 반환되는 데이터가 있을 경우 해당 데이터가 출력되고, 없으면 None이 출력됩니다.
+- 실행 실패: `{'False': 'Error code', 'data': 'Error 설명'}`
+  - 첫 번째 value로 error code, 두 번째 value로 해당 error에 관한 설명이 출력됩니다.
+  - 교육용 API에서 발생하는 error 종류와 원인은 다음과 같습니다.
+    - `Argument error`: 함수 실행에 필요한 필수 인자 값 미기입
+    - `Extension error`: filename에 잘못된 확장자 형식 입력 또는 미기입
+    - `NotFound error`: 존재하지 않는 데이터 입력 또는 데이터에서 값을 찾을 수 없는 경우
+    - `Exist error`: 이미 존재하는 데이터를 추가로 생성하는 경우
+    - `Range error`: 지정된 범위를 벗어난 값 입력
+    - `Running error`: 이미 실행 중인 함수의 중복 사용
+    - `Syntax error`: 잘못된 형식의 인자 값 입력
+    - `Exception error`: 위 error 이외의 다른 이유로 함수 실행에 실패한 경우
+
 ### 2.1 Audio
 
 > mp3, wav 파일을 재생 및 정지합니다.
@@ -118,11 +134,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - out: 출력대상(local-3.5mm잭 / hdmi / both) [default: local]
     - volume: 음량 크기 (단위: mdB=1/1000dB) [default: -2000]
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: 지정된 형식 이외의 filename 입력 (Audio filename must be 'mp3', 'wav')
-      - Error code2: 지정된 형식 이외의 out 입력 (Output device must be 'local', 'hdmi', 'both')
-      - Error code3: play_audio()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.play(filename=cfg.TESTDATA_PATH+"/test.mp3", out='local', volume=-2000)
@@ -132,8 +145,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 오디오 재생을 정지합니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (stop_audio()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 ### 2.2 Neopixel
 
@@ -159,42 +172,37 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   ```
 
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: color 미입력 (RGB or Color is required)
-      - Error code2: 0-255 범위를 color 입력 (RGB value should be 0-255)
-      - Error code3: 입력한 RGB color 개수가 3 또는 6이 아닌 경우 (Invalid format)
-      - Error code4: color_list에 없는 color 입력 (The color does not exist)
-      - Error code5: eye_on()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.eye_off()`
 
   - 기능: LED를 끕니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (eye_off()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 
-- `pibo.make_color(color, rgb)`
+- `pibo.make_color(color, rgb)` 
 
   - 기능: colordb에 원하는 색상을 추가합니다.
   - 매개변수
     - color: 추가할 색상 이름
-    - rgb: RGB (0~255) 튜플( (R,G,B) ) 
+    - rgb: RGB (0~255 숫자) 
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (make_color()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
-  pibo.make_color('lime', (191,255,0))
+  pibo.make_color('lime', 191,255,0)
   ```
 
 - `pibo.get_colordb()`
 
   - 기능: 사용 중인 colordb를 확인합니다. (`pibo.eye_on()`에 입력할 수 있는 color 목록 조회 )
   - 반환값
-    - True(성공), 현재 로드된 colordb
-    - False(실패), Error code (get_colordb()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': 현재 사용 중인 colordb}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.get_colordb()	# {'black': (0, 0, 0), 'white': (255, 255, 255), 'red': (255, 0, 0), ...}
@@ -204,8 +212,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: colordb를 기존에 제공하는 colordb 상태로 초기화합니다. 
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (init_colordb()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.save_colordb(filename)`
 
@@ -213,7 +221,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - filename: 저장할 데이터베이스 파일 이름
   - 반환값
-    - True(성공), None
+    - 성공: {'True', 'Success', 'data': None}
     - False(실패), Error code (save_colordb()를 정상적으로 실행하지 못한 경우)
 
   ```python
@@ -226,8 +234,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - filename: 불러올 colordb 파일 이름
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (load_colordb()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   # 기존에 제공되는 colordb를 new_colordb로 교체합니다. pibo.get_colordb()를 통해 현재 사용중인 colordb를 확인할 수 있습니다. 
@@ -240,8 +248,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - color: 삭제할 색상 이름
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (delete_color()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.delete_color('lime')
@@ -257,10 +265,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - system: 확인할 디바이스 (System, Baterry - 영어 대소문자 모두 가능)
   - 반환값
-    - True(성공), Device로부터 받은 응답
-    - False(실패), Error code
-      - Error code1: system, battery 이외의 인수 입력 (System must be 'battery', 'system')
-      - Error code2: check_device()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': Device로부터 받은 응답}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.check_device("battery")
@@ -272,8 +278,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - func: Device로부터 받은 응답을 확인하기 위한 함수
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (start_devices()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   def msg_device(msg):
@@ -287,8 +293,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 디바이스의 상태 확인을 종료합니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (stop_devices()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 ### 2.4 Motion
 
@@ -310,13 +316,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
     - accel: 모터 가속도 (0~255) [default: None- 사용자가 이전에 설정한 값으로 제어]
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: n 또는 position 미입력 (Channel/Position is required)
-      - Error code2: 0-9 범위를 벗어난 n 입력 (Channel value should be 0-9)
-      - Error code3: -80 - 80 범위를 벗어난 position 입력 (Position value should be -80 - 80)
-      - Error code4: 0-255 범위를 벗어난 speed 또는 accel 입력 (Speed/Acceleration value should be 0-255)
-      - Error code5: motor()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.motor(2, 30, 100, 10)
@@ -334,11 +335,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     
     - accel: 0-9번 모터 가속도 (0~255) 배열( [...] ) [default: None - 사용자가 이전에 설정한 값으로 제어]
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: 10개의 모터 positions 미입력 (10 positions are required)
-      - Error code2: 10개가 아닌 speed/accel 입력 (10 speeds/accelerations are required)
-      - Error code3: motors()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.motors(positions=[0,0,0,10,0,10,0,0,0,20], speed=[0,0,0,15,0,10,0,0,0,10], accel=[0,0,10,5,0,0,0,0,5,10])
@@ -356,11 +354,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
       
       - movetime이 있으면 해당 시간까지 모터를 이동시키기 위한 속도, 가속도 값을 계산하여 모터를 제어하고, movetime이 없으면 이전에 설정한 속도, 가속도 값에 의해 모터를 이동시킵니다.
   - 반환값
-    -  True(성공), None
-    -  False(실패), Error code
-       - Error code1: 10개의 모터 positions 미입력 (10 positions are required)
-       - Error code2: 양수가 아닌 movetime 입력 (Movetime is only available positive number)
-       - Error code3: motors_movetime()를 정상적으로 실행하지 못한 경우
+    -  성공: {'True': 'Success', 'data': None}
+    -  실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.motors_movetime(positions=[0,0,30,20, 30,0, 0,0,30,20], movetime=1000)
@@ -376,10 +371,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
     - name: 모션 이름
   - 반환값
-    - True(성공), 모션 종류 or 해당 모션 상세 정보 조회
-      - `pibo.get_motion()`: 파이보에서 이용 가능한 모션 종류 전체를 반환합니다.
-      - `pibo.get_motion(name)`: 입력한 매개변수에 대한 상세 정보를 반환합니다.
-    - False(실패), Error code (get_motion()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': motion profile로부터 받은 응답}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.get_motion()	# ['stop', 'stop_body', 'sleep', 'lookup', 'left', ...]
@@ -399,12 +392,9 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - name: 모션 이름
     - cycle: 모션 반복 횟수 [default: 1]
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: name 미입력 (Name is required)
-      - Error code2: 모션 목록에 없는 name 입력 (name not exist in the profile)
-      - Error code3: set_motion()를 정상적으로 실행하지 못한 경우
-  
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
+
   ```python
   pibo.set_motion("dance1", 5)
   ```
@@ -427,11 +417,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - text: 문자열 내용
     - size: 폰트 크기 [default: 10]
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: points 미입력 (2 points are required)
-      - Error code2: text 미입력 (Text is required)
-      - Error code3: draw_text()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.draw_text((10, 10), '안녕하세요.', 15)
@@ -440,14 +427,12 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 - `pibo.draw_image(filename)`
 
   - 기능: 이미지를 그립니다. (128X64 png 파일)
-    - 다른 크기 또는 다른 확장자 파일은 지원하지 않습니다.
+    - 128X64 png 파일 외에는 지원하지 않습니다.
   - 매개변수
     - filename: 이미지 파일의 경로
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: filename 미입력 (Filename is required)
-      - Error code2: draw_image()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.draw_image(cfg.TESTDATA_PATH +"/clear.png")
@@ -461,12 +446,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - shape: 도형 종류 - rectangle(사각형, 네모) / circle(원, 동그라미, 타원) / line(선, 직선)
     - fill: True(채움), False(채우지 않음) [default: False]
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: points 미입력 (4 points are required)
-      - Error code2: shape 미입력 (Shape is required)
-      - Error code3: 목록에 없는 shape 입력 (The shape does not exist)
-      - Error code4: draw_figure()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.draw_figure((10,10,30,30), "rectangle", True)
@@ -478,22 +459,22 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 기능: 이미지를 반전시킵니다. (색 반전)
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (invert()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.show_display()`
 
   - 기능: 화면에 표시합니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (show_display()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.clear_display()`  
 
   - 기능: 화면을 지웁니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (clear_display()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 ### 2.7 Speech
 
@@ -506,10 +487,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - string: 번역할 문장
     - to: 번역할 언어(한글-ko / 영어-en) [default: ko]
   - 반환값
-    - True(성공), 번역된 문장
-    - False(실패), Error code
-      - Error code1: string 미입력 (String is required)
-      - Error code2: translate()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': 번역된 문장}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.translate('즐거운 금요일', 'en')
@@ -558,18 +537,14 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - filename: 저장할 파일 이름(mp3) [default: tts.mp3]
 
   - 반환값
-  
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: string 미입력 (String is required)
-      - Error code2: string 입력 형식 위반 (Invalid string format)
-      - Error code3: 제공되는 목소리 이외의 입력 (The voice name does not exist)
-      - Error code4: tts()를 정상적으로 실행하지 못한 경우
-  
+
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
+
   ```python
   pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3")
   ```
-  
+
 - `pibo.stt(filename, lang, timeout)`
 
   - 기능: Speech(음성)를 Text(문자)로 변환합니다.
@@ -578,8 +553,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - lang: 한글(ko-KR) / 영어(en-US) [default: ko-KR]
     - timeout: 녹음할 시간(초) [default: 5초]
   - 반환값
-    - True(성공), None
-    - False(실패), Error code  (stt()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': 변환된 문장}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.stt()
@@ -591,8 +566,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - q: 질문
   - 반환값
-    - True(성공), 질문에 대한 응답
-    - False(실패), Error code (conversation()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': 질문에 대한 응답}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
   
   ```python
   pibo.conversation('주말에 뭐하지?')
@@ -607,15 +582,15 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   
   - 기능: 카메라가 촬영하는 영상을 OLED에 보여줍니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (start_camera()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
   
 - `pibo.stop_camera()`
 
   - 기능: 카메라를 종료합니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (stop_camera()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.capture(filename)` 
 
@@ -627,8 +602,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
       (이미지 파일 형식 기입 필수 - jpg, jpeg, png, bmp)
   - 반환값
     
-    - True(성공), None
-    - False(실패), Error code (capture()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.capture('test.png')
@@ -644,22 +619,22 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 반환값
 
-    - True(성공), {"name": 이름, "score": 점수, "position": 사물좌표(startX, startY, endX, endY)}
-    - False(실패), Error code (search_object()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': {"name": 이름, "score": 점수, "position": 사물좌표(startX, startY, endX, endY)}}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.search_qr()`
 
   - 기능: 이미지 안의 QR 코드 및 바코드를 인식합니다.
   - 반환값
-    - True(성공), {"data": 내용, "type": 바코드/QR코드}
-    - False(실패), Error code (search_qr()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': {"data": 내용, "type": 바코드/QR코드}}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.search_text()` 
 
   - 기능: 이미지 안의 문자를 인식합니다.
   - 반환값
-    - True(성공), 인식된 문자열
-    - False(실패), Error code (search_text()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': 인식된 문자열}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.search_color()`
 
@@ -668,20 +643,16 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     (Red, Orange, Yellow, Green, Skyblue, Blue, Purple, Magenta)
 
   - 반환값
-    
-    - True(성공), 인식된 색상
-    - False(실패), Error code
-      - Error code1: 색상을 인식하지 못한 경우 (Can't check color)
-      - Error code2: search_color()를 정상적으로 실행하지 못한 경우
+
+    - 성공: {'True': 'Success', 'data': 인식된 색상}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.detect_face()`
 
   - 기능: 이미지 안의 얼굴을 탐색합니다.
   - 반환값
-    - True(성공), 인식된 얼굴의 배열
-    - False(실패), Error code
-      - Error code1: 얼굴이 인식되지 않은 경우 (No Face)
-      - Error code2: detect_face()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': 얼굴 좌표(startX, startY, endX, endY)}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.search_face(filename)`
 
@@ -692,10 +663,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     
       (이미지 파일 형식 기입 필수 - jpg, jpeg, png, bmp)
   - 반환값
-    - True(성공), {"name": 이름, "score": 정확도, "gender": 성별, "age": 나이} (정확도 0.4 이하 동일인 판정)
-    - False(실패), Error code 
-      - Error code1: 얼굴이 인식되지 않은 경우 (No Face)
-      - Error code2: search_face()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': {"name": 이름, "score": 정확도, "gender": 성별, "age": 나이}} (정확도 0.4 이하 동일인 판정)
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.search_face("face.png")
@@ -707,11 +676,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - name: 학습할 얼굴의 이름
   - 반환값
-    - True(성공),  None
-    - False(실패), Error code
-      - Error code1: name 미입력 (Name is required)
-      - Error code2: 얼굴이 인식되지 않은 경우 (No Face)
-      - Error code3: train_face()를 정상적으로 실행하지 못한 경우
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.train_face("kim")
@@ -721,15 +687,15 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 기능: 사용 중인 facedb를 확인합니다.
   - 반환값
-    - True(성공), 현재 로드된 facedb
-    - False(실패), Error code (get_facedb()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': 현재 사용 중인 facedb}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
   
 - `pibo.init_facedb()`
 
   - 기능: facedb를 초기화합니다.
   - 반환값
-    - True(성공), None
-    - False(실패), Error code (init_facedb()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
 - `pibo.save_facedb(filename)`
 
@@ -737,10 +703,8 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - filename: 저장할 데이터베이스 파일 이름
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: filename 미입력 (Filename is required)
-      - Error code2: (save_facedb()를 정상적으로 실행하지 못한 경우)
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
 
   ```python
   pibo.save_facedb("./facedb")
@@ -752,11 +716,9 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - filename: 불러올 facedb 파일 이름
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: filename 미입력 (Filename is required)
-      - Error code2: (load_facedb()를 정상적으로 실행하지 못한 경우)
-  
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
+
   ```python
   pibo.load_facedb("facedb")
   ```
@@ -768,12 +730,9 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - name: 삭제할 얼굴 이름
   - 반환값
-    - True(성공), None
-    - False(실패), Error code
-      - Error code1: filename 미입력 (Filename is required)
-      - Error code2: (delete_facedb()를 정상적으로 실행하지 못한 경우)
-  
+    - 성공: {'True': 'Success', 'data': None}
+    - 실패: {'False': 'Error code', 'data': 'Error'}
+
   ```python
   pibo.train_face("kim")
   ```
-  
