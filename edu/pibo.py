@@ -56,21 +56,21 @@ class Edu_Pibo:
         if filename is not None:
             file_exist = self.check_file(filename)
             if file_exist == False:
-                return self.return_msg(False, "NotFound error", "The filename does not exist")
+                return self.return_msg(False, -3, "The filename does not exist", None)
             file_list = ('mp3', 'wav')
             ext = filename.rfind('.')
             file_ext = filename[ext+1:]
             if file_ext not in file_list:
-                return self.return_msg(False,  "Extension error", "Audio filename must be 'mp3', 'wav'")
+                return self.return_msg(False, -2, "Audio filename must be 'mp3', 'wav'", None)
         else:
-            return self.return_msg(False, "Argument error", "Filename is required")   
+            return self.return_msg(False, -1, "Filename is required", None)   
         try:
             if out not in ("local", "hdmi", "both"):
-                return self.return_msg(False, "NotFound error", "Output device must be 'local', 'hdmi', 'both'")
+                return self.return_msg(False, -3, "Output device must be 'local', 'hdmi', 'both'", None)
             self.audio.play(filename, out, volume, background)
-            return self.return_msg(True, "Success", None)
+            return self.return_msg(True, 0, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error" , e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Audio] - 오디오 재생 정지
@@ -79,12 +79,13 @@ class Edu_Pibo:
             self.audio.stop()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return False, e
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - LED ON
-    def eye_on(self, *color):
+    def eye_on(self, *color):#################################################
         if len(color) == 0:
+            return self.return_msg(False, -1, "RG", None) 
             return self.return_msg(False, "Argument error", "RGB or Color is required")
         try:
             if str(color[-1]).isdigit():
@@ -124,7 +125,7 @@ class Edu_Pibo:
                 self.device.send_raw(cmd)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", None)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - LED OFF
@@ -137,11 +138,11 @@ class Edu_Pibo:
                 self.device.send_raw(cmd)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", None)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - color 제작
-    def make_color(self, color=None, *rgb):
+    def add_color(self, color=None, *rgb):################
         if color is None or type(color) is not str:
             return self.return_msg(False, "Argument error", "Color is required")
         else:
@@ -162,7 +163,7 @@ class Edu_Pibo:
             color_list[color] = rgb
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - colordb 조회
@@ -170,7 +171,7 @@ class Edu_Pibo:
         try:
             return self.return_msg(True, "Success", self.colordb)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - 기존 colordb로 초기화
@@ -190,7 +191,7 @@ class Edu_Pibo:
             }
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - colordb를 파일로 저장
@@ -202,7 +203,7 @@ class Edu_Pibo:
                 pickle.dump(self.colordb, f)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - colordb 불러옴
@@ -218,7 +219,7 @@ class Edu_Pibo:
                 self.colordb = pickle.load(f)
                 return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Neopixel] - colordb의 color 삭제
@@ -232,7 +233,7 @@ class Edu_Pibo:
                 return self.return_msg(ret, "Success", None)
             return self.return_msg(False, "NotFound error", "{} not exist in the colordb".format(color))
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Device] - 디바이스 상태 확인
@@ -246,10 +247,11 @@ class Edu_Pibo:
             return self.return_msg(False, "Argument error", "Enter the device name to check")
         try:
             ret = self.device.send_cmd(self.device.code[system])
+            idx = ret.find(':')
             if system == "BATTERY":
-                ans = system + ': ' + ret[3:]
+                ans = system + ret[idx:]
             elif system == "SYSTEM":
-                result = ret[3:].split('-')
+                result = ret[idx:].split('-')
                 ans = {"PIR": "", "TOUCH": "", "DC_CONN": "", "BUTTON": "",}
                 ans["PIR"] = result[0]
                 ans["TOUCH"] = result[1]
@@ -257,7 +259,7 @@ class Edu_Pibo:
                 ans["BUTTON"] = result[3]
             return self.return_msg(True, "Success", ans)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Device] - start_devices thread
@@ -273,13 +275,14 @@ class Edu_Pibo:
 
             if time.time() - self.system_check_time > 1:
                 ret = self.device.send_cmd(self.device.code["SYSTEM"])
-                msg = "SYSTEM: " + ret[3:]
+                idx = ret.find(':')
+                msg = "SYSTEM" + ret[idx:]
                 func(msg)
                 self.system_check_time = time.time()
             
             if time.time() - self.battery_check_time > 10:
                 ret = self.device.send_cmd(self.device.code["BATTERY"])
-                msg = "BATTERY: " + ret[3:]
+                msg = "BATTERY" + ret[idx:]
                 func(msg)
                 self.battery_check_time = time.time()
             time.sleep(0.01)
@@ -298,7 +301,7 @@ class Edu_Pibo:
             t.start()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Device] - 디바이스 상태 확인 종료
@@ -307,7 +310,7 @@ class Edu_Pibo:
             self.check = False
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Motion] - 모터 1개 제어(위치/속도/가속도)
@@ -323,23 +326,25 @@ class Edu_Pibo:
         else:
             return self.return_msg(False, "Argument error", "Position is required")
         if speed:
+            # 값이 있을 때만 try로 가게
             if speed < 0 or speed > 255:
                 return self.return_msg(False, "Range error", "Speed value should be 0~255")
-            self.motion.set_speed(n, speed)
         if accel:
             if accel < 0 or accel > 255:
                 return self.return_msg(False, "Range error", "Acceleration value should be 0~255")
             self.motion.set_acceleration(n, accel)
+            self.motion.set_speed(n, speed)###################3조정
         try:
             self.motion.set_motor(n, position)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Motion] - 모든 모터 제어(위치/속도/가속도)
     def motors(self, positions=None, speed=None, accel=None):
         check = self.check_value("position", positions)
+        ## return 바꾸면 수정##################################################
         if "False" in check:
             return check
         if speed:
@@ -356,7 +361,7 @@ class Edu_Pibo:
             self.motion.set_motors(positions)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Motion] - 모든 모터 제어(movetime)
@@ -370,7 +375,7 @@ class Edu_Pibo:
             self.motion.set_motors(positions, movetime)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Motion] - 모션 종류 또는 모션 상세 정보 조회
@@ -379,7 +384,7 @@ class Edu_Pibo:
             ret = self.motion.get_motion(name)
             return self.return_msg(True, "Success", ret)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Motion] - 모션 수행
@@ -392,11 +397,11 @@ class Edu_Pibo:
                 return self.return_msg(ret, "NotFound error", "{} not exist in the motor profile".format(name))
             return self.return_msg(ret, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Motion] - motors 배열 체크
-    def check_value(self, mode, values):
+    def check_motor(self, mode, values):
         try:
             if values is None or len(values) != 10:
                 return self.return_msg(False, "Syntax error", "10 {}s are required".format(mode))
@@ -410,7 +415,8 @@ class Edu_Pibo:
                         return self.return_msg(False, "Range error", "{} value should be 0~255".format(mode.capitalize()))
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            ## 외부에서 쓰는ㄱ 아니니까 맞출 필요없음 값 받아와야되면 맞추고 아니면 
+            return self.return_msg(False, -8, e, None)
 
 
     # [OLED] - 문자
@@ -426,7 +432,7 @@ class Edu_Pibo:
             self.oled.draw_text(points, text)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [OLED] - 이미지
@@ -449,7 +455,7 @@ class Edu_Pibo:
             self.oled.draw_image(filename)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [OLED] - 도형
@@ -460,17 +466,18 @@ class Edu_Pibo:
         if shape is None:
             return self.return_msg(False, "Argument error", "Shape is required")
         try:
-            if shape == 'rectangle' or shape == '사각형' or shape == '네모':
+            ## 영어만 남기기 주석도 영어로 바꾸기##############################3
+            if shape == 'rectangle':
                 self.oled.draw_rectangle(points, fill)
-            elif shape == 'circle' or shape == '원' or shape == '동그라미' or shape == '타원':
+            elif shape == 'circle':
                 self.oled.draw_ellipse(points, fill)
-            elif shape == 'line' or shape == '선' or shape == '직선':
+            elif shape == 'line':
                 self.oled.draw_line(points)
             else:
                 return self.return_msg(False, "NotFound error", "The shape does not exist")
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [OLED] - 반전
@@ -479,7 +486,7 @@ class Edu_Pibo:
             self.oled.invert()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [OLED] - 화면 출력
@@ -488,7 +495,7 @@ class Edu_Pibo:
             self.oled.show()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [OLED] - 화면 지움
@@ -497,7 +504,7 @@ class Edu_Pibo:
             self.oled.clear()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [OLED] - 좌표 체크
@@ -514,7 +521,7 @@ class Edu_Pibo:
                         return self.return_msg(False, "Range error", "Points are only available positive number")
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Speech] - 문장 번역
@@ -528,7 +535,7 @@ class Edu_Pibo:
             ret = self.speech.translate(string, to)
             return self.return_msg(True, "Success", ret)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Speech] - TTS
@@ -548,7 +555,7 @@ class Edu_Pibo:
             self.speech.tts(string, filename)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Speech] - STT
@@ -557,7 +564,7 @@ class Edu_Pibo:
             ret = self.speech.stt(filename, lang, timeout)
             return self.return_msg(True, "Success", ret)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Speech] - 대화
@@ -569,8 +576,7 @@ class Edu_Pibo:
             else:
                 return self.return_msg(False, "Argument error", "Q is required")
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
-
+            return self.return_msg(False, -8, e, None)
 
     # [Vision] - start_camera thread
     def camera_on(self):
@@ -602,11 +608,11 @@ class Edu_Pibo:
                 return self.return_msg(False, "Running error", "Start_camera is already running")
             self.onair = True
             t = Thread(target=self.camera_on, args=())
-            # t.daemon = True
+            # t.daemon = True#########################확인###################왜 안되는지
             t.start()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 카메라 OFF
@@ -616,7 +622,7 @@ class Edu_Pibo:
             time.sleep(0.5)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 사진 촬영
@@ -640,7 +646,7 @@ class Edu_Pibo:
                 self.oled.show()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 객체 인식
@@ -650,7 +656,7 @@ class Edu_Pibo:
             ret = self.detect.detect_object(img)
             return self.return_msg(True, "Success", ret)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - QR/바코드 인식
@@ -660,7 +666,7 @@ class Edu_Pibo:
             ret = self.detect.detect_qr(img)
             return self.return_msg(True, "Success", ret)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 문자 인식
@@ -670,7 +676,7 @@ class Edu_Pibo:
             ret = self.detect.detect_text(img)
             return self.return_msg(True, "Success", ret)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
         
 
     # [Vision] - 컬러 인식
@@ -708,7 +714,7 @@ class Edu_Pibo:
                 ans = "Magenta"
             return self.return_msg(True, "Success", ans)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 얼굴 탐색
@@ -720,7 +726,7 @@ class Edu_Pibo:
                 return self.return_msg(False, "NotFound error", "No Face")
             return self.return_msg(True, "Success", faceList)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 얼굴 인식
@@ -758,7 +764,7 @@ class Edu_Pibo:
             self.camera.imwrite(filename, result)
             return self.return_msg(True, "Success", {"name": name, "score": score, "gender": gender, "age": age})
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 얼굴 학습
@@ -782,7 +788,7 @@ class Edu_Pibo:
             return True, None
 
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 사용 중인 facedb 확인
@@ -791,7 +797,7 @@ class Edu_Pibo:
             facedb = self.face.get_db()
             return self.return_msg(True, "Success", facedb)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - facedb 초기화
@@ -800,7 +806,7 @@ class Edu_Pibo:
             self.face.init_db()
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - facedb 불러옴
@@ -815,7 +821,7 @@ class Edu_Pibo:
             self.face.load_db(filename)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - facedb를 파일로 저장
@@ -826,7 +832,7 @@ class Edu_Pibo:
             self.face.save_db(filename)
             return self.return_msg(True, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - facedb에 등록된 얼굴 삭제
@@ -839,7 +845,7 @@ class Edu_Pibo:
                 return self.return_msg(False, "NotFound error", "{} not exist in the facedb".format(name))
             return self.return_msg(ret, "Success", None)
         except Exception as e:
-            return self.return_msg(False, "Exception error", e)
+            return self.return_msg(False, -8, e, None)
 
 
     # [Vision] - 카메라 실행 여부에 따른 이미지 결정
@@ -857,5 +863,8 @@ class Edu_Pibo:
 
     
     # return msg 규격화
-    def return_msg(self, status, msg, data=None):
-        return {str(status): "{}".format(msg), "data": data}
+    def return_msg(self, status, errcode, errmsg, data=None):
+        return {"result": status, "errcode": errcode, "errmsg": errmsg, "data": data}
+
+    # def return_msg(self, status, msg, data=None):
+    #     return {str(status): "{}".format(msg), "data": data}
