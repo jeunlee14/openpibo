@@ -695,7 +695,7 @@ class Edu_Pibo:
             elif (31 <=  hue <= 59):
                 ans = "Orange"
             elif (60 <=  hue <= 85):
-               ans = "Yellow"
+                ans = "Yellow"
             elif (86 <=  hue <= 159):
                 ans = "Green"
             elif (160 <=  hue <= 209):
