@@ -19,6 +19,7 @@ from queue import Queue
 from pathlib import Path
 
 
+alpha_cnt = 0
 class Edu_Pibo:
     def __init__(self):
         self.onair = False
@@ -84,15 +85,16 @@ class Edu_Pibo:
 
     # [Neopixel] - Determine number or letter    
     def isAlpha(self, *value):
-        # 'pink1', '12345'
+        global alpha_cnt
         if len(value) == 1 and type(*value) is int:
             return True
         else:
             for i in value:
                 if str(i).isalpha():
-                    continue
+                    alpha_cnt += 1
+            if alpha_cnt == 0:
+                return False
             return True
-        return False
 
 
     # [Neopixel] - LED ON
