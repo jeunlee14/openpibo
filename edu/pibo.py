@@ -53,7 +53,7 @@ class Edu_Pibo:
 
     # [Audio] - Play mp3/wav files
     def play_audio(self, filename=None, out='local', volume='-2000', background=True):
-        if filename is not None:
+        if filename:
             file_list = ('mp3', 'wav')
             ext = filename.rfind('.')
             file_ext = filename[ext+1:]
@@ -82,21 +82,25 @@ class Edu_Pibo:
             return self.return_msg(False, -8, e, None)
 
 
-    # [Neopixel] - Determine number or letter
-    def isAlpha(self, value):
-        for i in value:
-            if str(i).isalpha():
-                continue
-            return False
-        return True
+    # [Neopixel] - Determine number or letter    
+    def isAlpha(self, *value):
+        # 'pink1', '12345'
+        if len(value) == 1 and type(*value) is int:
+            return True
+        else:
+            for i in value:
+                if str(i).isalpha():
+                    continue
+            return True
+        return False
 
 
     # [Neopixel] - LED ON
     def eye_on(self, *color):
         if len(color) == 0:
-            return self.return_msg(False, -1, "RGB or Color is required", None) 
+            return self.return_msg(False, -1, "RGB or Color is required", None)
         try:
-            if self.isAlpha(color) == False:
+            if self.isAlpha(*color) == False:
                 for i in color:
                     if i < 0 or i > 255:
                         return self.return_msg(False, -5, "RGB value should be 0~255", None)
@@ -154,8 +158,6 @@ class Edu_Pibo:
         if color is None or type(color) is not str:
             return self.return_msg(False, -1, "Color is required", None)
         else:
-            if self.isAlpha == False:
-                return self.return_msg(False, -1, "Color name is required", None)
             if not rgb:
                 return self.return_msg(False, -1, "RGB value is required", None)
             else:
@@ -345,7 +347,6 @@ class Edu_Pibo:
         else:
             return self.return_msg(False, -1, "Position is required", None)
         try:
-            self.motion.set_motor(n, position)
             if speed:
                 if speed < 0 or speed > 255:
                     return self.return_msg(False, -5, "Speed value should be 0~255", None)
@@ -354,6 +355,7 @@ class Edu_Pibo:
                 if accel < 0 or accel > 255:
                     return self.return_msg(False, -5, "Acceleration value should be 0~255", None)
                 self.motion.set_acceleration(n, accel)
+            self.motion.set_motor(n, position)
             return self.return_msg(True, 0, "Success", None)
         except Exception as e:
             return self.return_msg(False, -8, e, None)
@@ -365,7 +367,6 @@ class Edu_Pibo:
         if check["result"] == False:
             return check
         try:
-            self.motion.set_motors(positions)
             if speed:
                 check = self.check_motor("speed", speed)
                 if check["result"] == False:
@@ -376,6 +377,7 @@ class Edu_Pibo:
                 if check["result"] == False:
                     return check
                 self.motion.set_accelerations(accel)
+            self.motion.set_motors(positions)
             return self.return_msg(True, 0, "Success", None)
         except Exception as e:
             return self.return_msg(False, -8, e, None)
@@ -440,7 +442,7 @@ class Edu_Pibo:
         check = self.points_check("text", points)
         if check["result"] == False:
             return check
-        if text is None:
+        if text is None or type(text) is not str:
             return self.return_msg(False, -1, "Text is required", None)
         try:
             if size:
@@ -479,7 +481,7 @@ class Edu_Pibo:
         check = self.points_check("figure", points)
         if check["result"] == False:
             return check
-        if shape is None:
+        if shape is None or type(shape) is not str:
             return self.return_msg(False, -1, "Shape is required", None)
         try:
             if shape == 'rectangle':
@@ -562,6 +564,11 @@ class Edu_Pibo:
     def tts(self, string=None, filename='tts.mp3'):
         if string is None:
             return self.return_msg(False, -1, "String is required", None)
+        file_list = ('mp3', 'wav')
+        ext = filename.rfind('.')
+        file_ext = filename[ext+1:]
+        if file_ext not in file_list:
+            return self.return_msg(False, -2, "TTS filename must be 'mp3', 'wav'", None)
         voice_list= ('WOMAN_READ_CALM', 'MAN_READ_CALM', 'WOMAN_DIALOG_BRIGHT', 'MAN_DIALOG_BRIGHT')
         if '<speak>' not in string or '</speak>' not in string:
             return self.return_msg(False, -7, "Invalid string format", None)
@@ -582,6 +589,8 @@ class Edu_Pibo:
     def stt(self, filename='stream.wav', lang='ko-KR', timeout=5):
         try:
             ret = self.speech.stt(filename, lang, timeout)
+            if 'Error' in ret:
+                return self.return_msg(False, -8, ret, None)
             return self.return_msg(True, 0, "Success", ret)
         except Exception as e:
             return self.return_msg(False, -8, e, None)
@@ -589,12 +598,13 @@ class Edu_Pibo:
 
     # [Speech] - Conversation
     def conversation(self, q=None):
+        if q and type(q) is not str:
+            return self.return_msg(False, -7, "Q is only available str type", None)
+        else:
+            return self.return_msg(False, -1, "Q is required", None)
         try:
-            if q:
-                ret = self.dialog.get_dialog(q)
-                return self.return_msg(True, 0, "Success", ret)
-            else:
-                return self.return_msg(False, -1, "Q is required", None)
+            ret = self.dialog.get_dialog(q)
+            return self.return_msg(True, 0, "Success", ret)
         except Exception as e:
             return self.return_msg(False, -8, e, None)
 
@@ -648,12 +658,11 @@ class Edu_Pibo:
 
     # [Vision] - Capture
     def capture(self, filename="capture.png"):
-        if filename is not None:
-            file_list = ("png", "jpg", "jpeg", "bmp")
-            ext = filename.rfind('.')
-            file_ext = filename[ext+1:]
-            if file_ext not in file_list:
-                return self.return_msg(False, -2, "Image filename must be 'png', 'jpg', 'jpeg', 'bmp'", None) 
+        file_list = ("png", "jpg", "jpeg", "bmp")
+        ext = filename.rfind('.')
+        file_ext = filename[ext+1:]
+        if file_ext not in file_list:
+            return self.return_msg(False, -2, "Image filename must be 'png', 'jpg', 'jpeg', 'bmp'", None) 
         try:
             if self.onair:
                 self.camera.imwrite(filename, self.img)
@@ -799,13 +808,13 @@ class Edu_Pibo:
 
             if len(faces) < 1:
                 return self.return_msg(False, -3, "No Face", None)
+
             for i, (x,y,w,h) in enumerate(faces):
                 if w > max_w:
                     max_w = w
                     idx = i
-    
             self.face.train_face(img, faces[idx], name)
-            return True, None
+            return self.return_msg(True, 0, "Success", None)
 
         except Exception as e:
             return self.return_msg(False, -8, e, None)

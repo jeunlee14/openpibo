@@ -108,19 +108,19 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
 각 메서드의 반환값은 다음과 같은 형식으로 구성됩니다.
 
-- 실행 성공: `{"result": True, "errcode": 0, "errmsg": "Success", "data": None 또는 data}`
+- 실행 성공: `{"result": True, "errcode": 0, "errmsg": "Success", "data": data 또는 None}`
   - 메서드에서 반환되는 데이터가 있을 경우 해당 데이터가 출력되고, 없으면 None이 출력됩니다.
 - 실행 실패: `{"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}`
   - `errcode`에 err 숫자 코드가, `errmsg`에 해당 error 발생 원인이 출력됩니다.
   - err 숫자 코드의 의미와 발생 원인은 다음과 같습니다.
-    - `-1` : Argument error - 함수 실행에 필요한 필수 인자 값 미기입
-    - `-2` : Extension error - filename에 잘못된 확장자 형식 입력 또는 미기입
+    - `-1` : Argument error - 메서드 실행에 필요한 필수 인자 값 미기입
+    - `-2` : Extension error - filename에 확장자 미기입 또는 잘못된 확장자 형식 입력
     - `-3` : NotFound error - 존재하지 않는 데이터 입력 또는 데이터에서 값을 찾을 수 없는 경우
-    - `-4` : Exist error - 이미 존재하는 데이터를 추가로 생성하는 경우
+    - `-4` : Exist error - 이미 존재하는 데이터의 중복 생성
     - `-5` : Range error - 지정된 범위를 벗어난 값 입력
     - `-6` : Running error - 이미 실행 중인 함수의 중복 사용
     - `-7` : Syntax error - 잘못된 형식의 인자 값 입력
-    - `-8` : Exception error - 위 error 이외의 다른 이유로 함수 실행에 실패한 경우
+    - `-8` : Exception error - 위 error 이외의 다른 이유로 메서드 실행에 실패한 경우
 
 ### 2.1 Audio
 
@@ -134,7 +134,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - out: 출력대상(local-3.5mm잭 / hdmi / both) [default: local]
     - volume: 음량 크기 (단위: mdB=1/1000dB) [default: -2000]
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -145,7 +145,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 오디오 재생을 정지합니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 ### 2.2 Neopixel
@@ -171,15 +171,19 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   pibo.eye_on('aqua', 'pink') # 양쪽 눈 개별 제어
   ```
 
+  > 두 가지 방식을 동시에 사용할 수는 없습니다.
+  >
+  > pibo.eye_on('blue', 0, 255, 0) (X)
+
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 - `pibo.eye_off()`
 
   - 기능: LED를 끕니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 
@@ -190,7 +194,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - color: 추가할 색상 이름
     - rgb: RGB (0~255 숫자) 
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -212,7 +216,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: colordb를 기존에 제공하는 colordb 상태로 초기화합니다. 
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 - `pibo.save_colordb(filename)`
@@ -221,8 +225,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - filename: 저장할 데이터베이스 파일 이름
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
-    - {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
+    - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
   pibo.save_colordb('./new_colordb')
@@ -234,7 +238,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - filename: 불러올 colordb 파일 이름
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -248,7 +252,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - color: 삭제할 색상 이름
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}}
 
   ```python
@@ -263,7 +267,8 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 디바이스의 상태를 확인합니다. (일회성)
   - 매개변수
-    - system: 확인할 디바이스 (System, Baterry - 영어 대소문자 모두 가능)
+    - system: 확인할 디바이스 (system, baterry - 영어 대소문자 모두 가능)
+      - system 입력으로 PIR, TOUCH, DC_CONN, BUTTON의 상태를 조회할 수 있습니다.
   - 반환값
     - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": Device로부터 받은 응답}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
@@ -278,7 +283,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 매개변수
     - func: Device로부터 받은 응답을 확인하기 위한 함수
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -293,7 +298,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
   - 기능: 디바이스의 상태 확인을 종료합니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 ### 2.4 Motion
@@ -316,7 +321,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
 
     - accel: 모터 가속도 (0~255) [default: None- 사용자가 이전에 설정한 값으로 제어]
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -335,7 +340,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     
     - accel: 0-9번 모터 가속도 (0~255) 배열( [...] ) [default: None - 사용자가 이전에 설정한 값으로 제어]
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -354,7 +359,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
       
       - movetime이 있으면 해당 시간까지 모터를 이동시키기 위한 속도, 가속도 값을 계산하여 모터를 제어하고, movetime이 없으면 이전에 설정한 속도, 가속도 값에 의해 모터를 이동시킵니다.
   - 반환값
-    -  성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    -  성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     -  실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -392,7 +397,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - name: 모션 이름
     - cycle: 모션 반복 횟수 [default: 1]
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -417,7 +422,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - text: 문자열 내용
     - size: 폰트 크기 [default: 10]
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -431,7 +436,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - filename: 이미지 파일의 경로
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -446,7 +451,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
     - shape: 도형 종류 - rectangle, circle, line
     - fill: True(채움), False(채우지 않음) [default: False]
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -459,21 +464,21 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 기능: 이미지를 반전시킵니다. (색 반전)
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 - `pibo.show_display()`
 
   - 기능: 화면에 표시합니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 - `pibo.clear_display()`  
 
   - 기능: 화면을 지웁니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 ### 2.7 Speech
@@ -534,11 +539,11 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
         </speak>
         ```
       
-    - filename: 저장할 파일 이름(mp3) [default: tts.mp3]
+    - filename: 저장할 파일 이름(mp3, wav) [default: tts.mp3]
 
   - 반환값
 
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -582,14 +587,14 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   
   - 기능: 카메라가 촬영하는 영상을 OLED에 보여줍니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
   
 - `pibo.stop_camera()`
 
   - 기능: 카메라를 종료합니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 - `pibo.capture(filename)` 
@@ -602,7 +607,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
       (이미지 파일 형식 기입 필수 - jpg, jpeg, png, bmp)
   - 반환값
     
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -676,7 +681,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - name: 학습할 얼굴의 이름
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -694,7 +699,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
 
   - 기능: facedb를 초기화합니다.
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
 - `pibo.save_facedb(filename)`
@@ -703,7 +708,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - filename: 저장할 데이터베이스 파일 이름
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -716,7 +721,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - filename: 불러올 facedb 파일 이름
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
@@ -730,7 +735,7 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   - 매개변수
     - name: 삭제할 얼굴 이름
   - 반환값
-    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": data}
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": None}
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
