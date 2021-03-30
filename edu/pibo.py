@@ -86,7 +86,8 @@ class Edu_Pibo:
     # [Neopixel] - Determine number or letter    
     def isAlpha(self, *value):
         global alpha_cnt
-        if len(value) == 1 and type(*value) is int:
+
+        if len(value) == 1 and type(*value) is str:
             return True
         else:
             for i in value:
