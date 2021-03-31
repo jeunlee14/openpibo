@@ -9,6 +9,8 @@
 ~/openpibo $ sudo ./install.sh
 ...
 REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
+
+~/openpibo $ sudo ./control_mic_volume.sh
 ```
 
 #### 1.1.1 APIs
@@ -112,15 +114,28 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - 메서드에서 반환되는 데이터가 있을 경우 해당 데이터가 출력되고, 없으면 None이 출력됩니다.
 - 실행 실패: `{"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}`
   - `errcode`에 err 숫자 코드가, `errmsg`에 해당 error 발생 원인이 출력됩니다.
-  - err 숫자 코드의 의미와 발생 원인은 다음과 같습니다.
+  - err 숫자코드의 의미와 발생 원인은 다음과 같습니다.
     - `-1` : Argument error - 메서드 실행에 필요한 필수 인자 값 미기입
     - `-2` : Extension error - filename에 확장자 미기입 또는 잘못된 확장자 형식 입력
-    - `-3` : NotFound error - 존재하지 않는 데이터 입력 또는 데이터에서 값을 찾을 수 없는 경우
+    - `-3` : NotFound error - 존재하지 않는 데이터 입력
     - `-4` : Exist error - 이미 존재하는 데이터의 중복 생성
     - `-5` : Range error - 지정된 범위를 벗어난 값 입력
     - `-6` : Running error - 이미 실행 중인 함수의 중복 사용
     - `-7` : Syntax error - 잘못된 형식의 인자 값 입력
     - `-8` : Exception error - 위 error 이외의 다른 이유로 메서드 실행에 실패한 경우
+
+- `pibo.get_code(errcode)`
+
+  - 기능: err 숫자코드의 의미를 조회합니다.
+  - 매개변수
+    - errcode: 조회하고자 하는 errcode 숫자
+  - 반환값
+    - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": errcode 의미}
+    - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
+
+  ```python
+  pibo.get_code(-3)
+  ```
 
 ### 2.1 Audio
 
