@@ -124,7 +124,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - `-7` : Syntax error - 잘못된 형식의 인자 값 입력
     - `-8` : Exception error - 위 error 이외의 다른 이유로 메서드 실행에 실패한 경우
 
-- `pibo.get_code(errcode)`
+- `pibo.get_codeMean(errcode)`
 
   - 기능: err 숫자코드의 의미를 조회합니다.
   - 매개변수
@@ -134,7 +134,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
     - 실패: {"result": False, "errcode": errcode, "errmsg": "errmsg", "data": None}
 
   ```python
-  pibo.get_code(-3)
+  pibo.get_codeMean(-3)
   ```
 
 ### 2.1 Audio
