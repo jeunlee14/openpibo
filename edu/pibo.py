@@ -688,6 +688,8 @@ class Edu_Pibo:
         try:
             img = self.check_onair()
             ret = self.detect.detect_object(img)
+            if ret == []:
+                return self.return_msg(False, -3, "No object", None)
             return self.return_msg(True, 0, "Success", ret)
         except Exception as e:
             return self.return_msg(False, -8, e, None)
@@ -698,6 +700,8 @@ class Edu_Pibo:
         try:
             img = self.check_onair()
             ret = self.detect.detect_qr(img)
+            if ret["data"] == "":
+                return self.return_msg(False, -3, "No QR, barcode", None)
             return self.return_msg(True, 0, "Success", ret)
         except Exception as e:
             return self.return_msg(False, -8, e, None)
@@ -708,6 +712,8 @@ class Edu_Pibo:
         try:
             img = self.check_onair()
             ret = self.detect.detect_text(img)
+            if ret == "":
+                return self.return_msg(False, -3, "No text", None)
             return self.return_msg(True, 0, "Success", ret)
         except Exception as e:
             return self.return_msg(False, -8, e, None)

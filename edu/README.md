@@ -291,7 +291,7 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
       print(msg)
   
   def check_devices():
-  	  pibo.start_devices(msg_device)
+      pibo.start_devices(msg_device)
   ```
 
 - `pibo.stop_devices()`
