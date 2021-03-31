@@ -601,8 +601,9 @@ class Edu_Pibo:
 
     # [Speech] - Conversation
     def conversation(self, q=None):
-        if q and type(q) is not str:
-            return self.return_msg(False, -7, "Q is only available str type", None)
+        if q:
+            if type(q) is not str:
+                return self.return_msg(False, -7, "Q is only available str type", None)
         else:
             return self.return_msg(False, -1, "Q is required", None)
         try:
