@@ -127,13 +127,12 @@ REBOOT NOW? [y/N] # y입력 또는 N 입력 후 sudo reboot
   - err 숫자코드의 의미와 발생 원인은 다음과 같습니다.
     
     -   `0` : 메서드 실행 성공
-    
     - `-1` : Argument error - 메서드 실행에 필요한 필수 인자 값 미기입
     - `-2` : Extension error - filename에 확장자 미기입 또는 잘못된 확장자 형식 입력
     - `-3` : NotFound error - 존재하지 않는 데이터 입력
     - `-4` : Exist error - 이미 존재하는 데이터의 중복 생성
     - `-5` : Range error - 지정된 범위를 벗어난 값 입력
-  - `-6` : Running error - 이미 실행 중인 함수의 중복 사용
+    - `-6` : Running error - 이미 실행 중인 함수의 중복 사용
     - `-7` : Syntax error - 잘못된 형식의 인자 값 입력
     - `-8` : Exception error - 위 error 이외의 다른 이유로 메서드 실행에 실패한 경우
   
