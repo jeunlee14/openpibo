@@ -1,3 +1,4 @@
+import time
 import argparse
 import sys
 sys.path.append('/home/pi/openpibo/lib')
@@ -13,9 +14,8 @@ class Config:
 
 def disp(args):
   v = args.eip.split(",") + args.wip.split(",")
-  o = cOled(conf=Config())
+  o.clear()
   o.set_font(size=12)
-
   eip = v[1] if v[0] == "" else v[0]
   wip = v[4] if v[2] == "" else v[2]
   ssid = v[5] if v[3] == "" else v[3]
@@ -29,6 +29,16 @@ def disp(args):
 
 
 if __name__ == "__main__":
+  o = cOled(conf=Config())
+  o.set_font(size=20)
+
+  for i in range(10):
+    o.draw_text((7,20), "Ready... ({})".format(i+1))
+    o.show()
+    time.sleep(2)
+    o.clear()
+    time.sleep(1)
+
   parser = argparse.ArgumentParser()
   parser.add_argument('--eip', help='eth ip address', required=True)
   parser.add_argument('--wip', help='wlan ip address', required=True)
