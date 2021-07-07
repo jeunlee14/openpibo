@@ -66,7 +66,7 @@ class Edu_Pibo:
 
     # [Audio] - Play mp3/wav files
     def play_audio(self, filename=None, out='local', volume='-2000', background=True):
-        if filename:
+        if filename != None:
             file_list = ('mp3', 'wav')
             ext = filename.rfind('.')
             file_ext = filename[ext+1:]
@@ -99,7 +99,7 @@ class Edu_Pibo:
     def isAlpha(self, *value):
         global alpha_cnt
 
-        if len(value) == 1 and type(*value) is str:
+        if len(value) == 1 and type(*value) == str:
             return True
         else:
             for i in value:
@@ -170,7 +170,7 @@ class Edu_Pibo:
 
     # [Neopixel] - Create the color
     def add_color(self, color=None, *rgb):
-        if color is None or type(color) is not str:
+        if color == None or type(color) != str:
             return self.return_msg(False, "Argument error", "Color is required", None)
         else:
             if not rgb:
@@ -221,7 +221,7 @@ class Edu_Pibo:
 
     # [Neopixel] - Save the colordb as a file
     def save_colordb(self, filename=None):
-        if filename is None:
+        if filename == None:
             return self.return_msg(False, "Argument error", "Filename is required", None)
         try:
             with open(filename, "w+b") as f:
@@ -233,7 +233,7 @@ class Edu_Pibo:
 
     # [Neopixel] - Load colordb
     def load_colordb(self, filename=None):
-        if filename is None:
+        if filename == None:
             return self.return_msg(False, "Argument error", "Filename is required", None)
         else:
             file_exist = self.check_file(filename)
@@ -249,7 +249,7 @@ class Edu_Pibo:
 
     # [Neopixel] - Delete color in the colordb
     def delete_color(self, color=None):
-        if color is None:
+        if color == None:
             return self.return_msg(False, "Argument error", "Color is required", None)
         try:
             ret = color in self.colordb.keys()
@@ -315,7 +315,7 @@ class Edu_Pibo:
 
     # [Device] - Check device(thread)
     def start_devices(self, func=None):
-        if func is None:
+        if func == None:
             return self.return_msg(False, "Argument error", "Func is required", None)
         if self.check:
             return self.return_msg(False, "Running error", "start_devices() is already running", None)
@@ -340,22 +340,22 @@ class Edu_Pibo:
 
     # [Motion] - Control 1 motor(position/speed/accel)
     def motor(self, n=None, position=None, speed=None, accel=None):
-        if n:
+        if n != None:
             if n < 0 or n > 9:
                 return self.return_msg(False, "Range error", "Channel value should be 0~9", None)
         else:
             return self.return_msg(False, "Argument error", "Channel is required", None)
-        if position:
+        if position != None:
             if abs(position) > self.motor_range[n]:
                 return self.return_msg(False, "Range error", "The position range of channel {} is -{} ~ {}".format(n, self.motor_range[n], self.motor_range[n]), None)
         else:
             return self.return_msg(False, "Argument error", "Position is required", None)
         try:
-            if speed:
+            if speed != None:
                 if speed < 0 or speed > 255:
                     return self.return_msg(False, "Range error", "Speed value should be 0~255", None)
                 self.motion.set_speed(n, speed)
-            if accel:
+            if accel != None:
                 if accel < 0 or accel > 255:
                     return self.return_msg(False, "Range error", "Acceleration value should be 0~255", None)
                 self.motion.set_acceleration(n, accel)
@@ -371,12 +371,12 @@ class Edu_Pibo:
         if check["result"] == False:
             return check
         try:
-            if speed:
+            if speed != None:
                 check = self.check_motor("speed", speed)
                 if check["result"] == False:
                     return check
                 self.motion.set_speeds(speed)
-            if accel:
+            if accel != None:
                 check = self.check_motor("acceleration", accel)
                 if check["result"] == False:
                     return check
@@ -412,7 +412,7 @@ class Edu_Pibo:
 
     # [Motion] - Set motion
     def set_motion(self, name=None, cycle=1):
-        if name is None:
+        if name == None:
             return self.return_msg(False, "Argument error", "Name is required", None)
         try:
             ret = self.motion.set_motion(name, cycle)
@@ -426,7 +426,7 @@ class Edu_Pibo:
     # [Motion] - Check motors array
     def check_motor(self, mode, values):
         try:
-            if values is None or len(values) != 10:
+            if values == None or len(values) != 10:
                 return self.return_msg(False, "Syntax error", "10 {}s are required".format(mode), None)
             if mode == "position":
                 for i in range(len(values)):
@@ -446,7 +446,7 @@ class Edu_Pibo:
         check = self.points_check("text", points)
         if check["result"] == False:
             return check
-        if text is None or type(text) is not str:
+        if text == None or type(text) != str:
             return self.return_msg(False, "Argument error", "Text is required", None)
         try:
             if size:
@@ -459,7 +459,7 @@ class Edu_Pibo:
 
     # [OLED] - Draw an image
     def draw_image(self, filename=None):
-        if filename is None:
+        if filename == None:
             return self.return_msg(False, "Argument error", "Filename is required", None)
         else:
             ext = filename.rfind('.')
@@ -485,7 +485,7 @@ class Edu_Pibo:
         check = self.points_check("figure", points)
         if check["result"] == False:
             return check
-        if shape is None or type(shape) is not str:
+        if shape == None or type(shape) != str:
             return self.return_msg(False, "Argument error", "Shape is required", None)
         try:
             if shape == 'rectangle':
@@ -534,10 +534,10 @@ class Edu_Pibo:
         if mode == "figure":
             number = 4
         # points가 1개일 때 int -> tuple
-        if points and type(points) is int:
+        if points and type(points) == int:
             points = (points, )
         try: 
-            if points is None or type(points) is not tuple:
+            if points == None or type(points) != tuple:
                 return self.return_msg(False, "Argument error", "{} points are required".format(number), None)
             else:
                 if len(points) != number:
@@ -553,7 +553,7 @@ class Edu_Pibo:
     # [Speech] - Sentence translation
     def translate(self, string=None, to='ko'):
         to_list = ('ko', 'en')
-        if string is None:
+        if string == None:
             return self.return_msg(False, "Argument error", "String is required", None)
         if to not in to_list:
             return self.return_msg(False, "Syntax error", "Translation is only available 'ko', 'en'", None)
@@ -566,7 +566,7 @@ class Edu_Pibo:
 
     # [Speech] - TTS
     def tts(self, string=None, filename='tts.mp3'):
-        if string is None:
+        if string == None:
             return self.return_msg(False, "Argument error", "String is required", None)
         ext = filename.rfind('.')
         file_ext = filename[ext+1:]
@@ -600,7 +600,7 @@ class Edu_Pibo:
     # [Speech] - Conversation
     def conversation(self, q=None):
         if q:
-            if type(q) is not str:
+            if type(q) != str:
                 return self.return_msg(False, "Syntax error", "Q is only available str type", None)
         else:
             return self.return_msg(False, "Argument error", "Q is required", None)
@@ -765,7 +765,7 @@ class Edu_Pibo:
     def search_face(self, filename="face.png"):
         max_w = -1
         selected_face = []
-        if filename is not None:
+        if filename != None:
             file_list = ("png", "jpg", "jpeg", "bmp")
             ext = filename.rfind('.')
             file_ext = filename[ext+1:]
@@ -802,7 +802,7 @@ class Edu_Pibo:
     # [Vision] - Train face
     def train_face(self, name=None):
         max_w = -1
-        if name is None:
+        if name == None:
             return self.return_msg(False, "Argument error", "Name is required", None)
         try:
             img = self.check_onair()
@@ -842,7 +842,7 @@ class Edu_Pibo:
 
     # [Vision] - Load facedb
     def load_facedb(self, filename=None):
-        if filename is None:
+        if filename == None:
             return self.return_msg(False, "Argument error", "Filename is required", None)
         else:
             file_exist = self.check_file(filename)
@@ -857,7 +857,7 @@ class Edu_Pibo:
 
     # [Vision] - Save the facedb as a file
     def save_facedb(self, filename=None):
-        if filename is None:
+        if filename == None:
             return self.return_msg(False, "Argument error", "Filename is required", None)
         try:
             self.face.save_db(filename)
@@ -868,7 +868,7 @@ class Edu_Pibo:
 
     # [Vision] - Delete face in the facedb
     def delete_face(self, name=None):
-        if name is None:
+        if name == None:
             return self.return_msg(False, "Argument error", "Name is required", None)
         try:
             ret = self.face.delete_face(name)
