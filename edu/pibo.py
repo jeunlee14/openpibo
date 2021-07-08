@@ -589,9 +589,9 @@ class Edu_Pibo:
 
 
     # [Speech] - STT
-    def stt(self, filename='stream.wav', lang='ko-KR', timeout=5):
+    def stt(self, filename='stream.wav', timeout=5):
         try:
-            ret = self.speech.stt(filename, lang, timeout)
+            ret = self.speech.stt(filename, timeout)
             return self.return_msg(True, "Success", "Success", ret)
         except Exception as e:
             return self.return_msg(False, "Exception error", e, None)

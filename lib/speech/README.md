@@ -23,11 +23,10 @@
     + filename: 저장할 파일이름(wav)
     + lang: 한글ko or 영어en
 
-+ cSpeech.stt(filename, lang, timeout)
++ cSpeech.stt(filename, timeout)
   - 기능: STT(Speech to Speech)/ Speech(말)을 Speech(문자)로 변환합니다.
   - 매개변수
     + filename: 저장할 파일이름(flac)
-    + lang: 언어(ko-KR/en-US)
     + timeout: 녹음할 시간(초)
   - 반환값
     + ret: 성공/실패
