@@ -2,6 +2,7 @@
 
 ```
 sudo ./install.sh
+control_mic_volume.sh
 ```
 
 Test Environment
