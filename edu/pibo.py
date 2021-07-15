@@ -38,16 +38,15 @@ class Edu_Pibo:
         self.img = ""
         self.check = False
         self.flash = False
+        self.device = cDevice()
         self.audio = cAudio()
         self.oled = cOled(conf=cfg)
         self.speech = cSpeech(conf=cfg)
         self.dialog = cDialog(conf=cfg)
-        self.device = cDevice()
         self.motion = cMotion(conf=cfg)
         self.camera = cCamera()
         self.face = cFace(conf=cfg)
         self.detect = cDetect(conf=cfg)
-        self.device.send_cmd(self.device.code['PIR'], "on")
         self.que = Queue()
         self.colordb = {
             'black': (0,0,0),
@@ -62,7 +61,7 @@ class Edu_Pibo:
             'pink': (255,51,153),
         }
         self.motor_range = [25,35,80,30,50,25,25,35,80,30]
-
+        self.device.send_cmd(self.device.code['PIR'], "on")
 
     # [Audio] - Play mp3/wav files
     def play_audio(self, filename=None, out='local', volume='-2000', background=True):
