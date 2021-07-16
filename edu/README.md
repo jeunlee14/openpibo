@@ -599,12 +599,11 @@ OLED 관련 메서드에서는 좌측상단, 우측하단 튜플을 기준으로
   pibo.tts("<speak><voice name='MAN_READ_CALM'>안녕하세요. 반갑습니다.<break time='500ms'/></voice></speak>", "tts.mp3")
   ```
 
-- `stt(filename, lang, timeout)`
+- `stt(filename, timeout)`
 
   - 기능: Speech(음성)를 Text(문자)로 변환합니다.
   - 매개변수
     - filename: 저장할 파일 이름 [default: stream.wav]
-    - lang: 한글(ko-KR) / 영어(en-US) [default: ko-KR]
     - timeout: 녹음할 시간(초) [default: 5초]
   - 반환값
     - 성공: {"result": True, "errcode": 0, "errmsg": "Success", "data": 변환된 문장}

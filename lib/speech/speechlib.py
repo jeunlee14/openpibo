@@ -63,7 +63,7 @@ class cSpeech:
     with open(filename, 'wb') as f:
       f.write(r.content)
 
-  def stt(self, filename="stream.wav", lang="ko-KR"'''en-US''', timeout=5):
+  def stt(self, filename="stream.wav", timeout=5):
     cmd = "arecord -D dmic_sv -c2 -r 16000 -f S32_LE -d {} -t wav -q -vv -V streo stream.raw;sox stream.raw -c 1 -b 16 stream.wav;rm stream.raw".format(timeout)
     os.system(cmd)
 
