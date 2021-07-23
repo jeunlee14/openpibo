@@ -315,15 +315,15 @@ class TestMotor:
         assert res == res_form(False, "Range error", "Acceleration value should be 0~255", None)
 
     def test_valid(self):
-        res = pibo.motor(n=0, position=0, speed=0, accel=0)
+        res = pibo.motor(n=0, position=0, speed=10, accel=10)
         assert res == res_form()
 
 
 class TestMotors:
     def test_valid(self):
         positions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        speed = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        accel = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        speed = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+        accel = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
         res = pibo.motors(positions=positions, speed=speed, accel=accel)
         assert res == res_form()
 
@@ -783,4 +783,5 @@ def test_end():
     os.system('sudo pkill omxplayer')
     os.remove('test')
     os.remove('tts.mp3')
+    os.remove('stream.wav')
     assert True
