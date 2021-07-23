@@ -19,7 +19,6 @@ from queue import Queue
 from pathlib import Path
 
 
-alpha_cnt = 0
 code_list = {
     "Success": 0,
     "Argument error": -1,
@@ -96,7 +95,7 @@ class Edu_Pibo:
 
     # [Neopixel] - Determine number or letter    
     def isAlpha(self, *value):
-        global alpha_cnt
+        alpha_cnt = 0
 
         if len(value) == 1 and type(*value) == str:
             return True
@@ -532,9 +531,6 @@ class Edu_Pibo:
         number = 2
         if mode == "figure":
             number = 4
-        # points가 1개일 때 int -> tuple
-        if points and type(points) == int:
-            points = (points, )
         try: 
             if points == None or type(points) != tuple:
                 return self.return_msg(False, "Argument error", "{} points are required".format(number), None)
