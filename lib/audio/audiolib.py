@@ -7,11 +7,9 @@ class cAudio:
   # out: local/hdmi/both
   # volume: mdB
   # filename: mp3/wav
-
   def __init__(self):
-    self.is_mute = HIGH
     os.system('gpio mode 7 out')
-    os.system('gpio write 7 1')
+    os.system(f'gpio write 7 {HIGH}')
 
   def play(self, filename, out='local', volume='-2000', background=True):
     if background:
@@ -22,9 +20,10 @@ class cAudio:
   def stop(self):
     os.system('sudo pkill omxplayer')
   
-  def mute(self):
-    if self.is_mute == HIGH:
-      self.is_mute = LOW
+  def mute(self, value):
+    if type(value) != bool:
+      raise TypeError(f"'{value}' is not a bool.")
+    if value:
+      os.system(f'gpio write 7 {LOW}')
     else:
-      self.is_mute = HIGH
-    os.system(f'gpio write 7 {self.is_mute}')
+      os.system(f'gpio write 7 {HIGH}')
