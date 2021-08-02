@@ -71,6 +71,12 @@ sudo vi /etc/modprobe.d/8192cu.conf
   git config --global http.sslverify false
 
  - sudo systemctl disable hciuart.service
+ 
+ - usb mount
+   + sudo apt install usbmount -y
+   + /etc/usbmount/usbmount.conf 수정 (FS_MOUNTOPTIONS="" --> FS_MOUNTOPTIONS="-fstype=vfat,iocharset=utf8")
+   +/lib/systemd/system/udev.service (PrivateMounts=yes --> PrivateMounts=no)
+ 
 </code>
 </pre>
 
